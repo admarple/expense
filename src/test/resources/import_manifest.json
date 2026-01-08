@@ -1,0 +1,30 @@
+{
+  "reports": [
+    {
+      "path": "boa_expenses.csv",
+      "source": "Alex's Bank of America",
+      "retrievalDate": "2026-01-06"
+    },
+    {
+      "path": "discover_expenses.csv",
+      "source": "Alex's Discover",
+      "retrievalDate": "2026-01-06"
+    },
+    {
+      "path": "wellsfargo_expenses.csv",
+      "source": "Joint Wells Fargo",
+      "retrievalDate": "2026-01-06"
+    }
+  ],
+  "expectedExpenses": {
+    "path": "expected_expenses.csv",
+    "descriptionPatterns": {
+      "path": "expected_expenses_description_patterns.csv"
+    }
+  },
+  "categories": {
+    "descriptionPatterns": {
+      "path": "category_description_patterns.csv"
+    }
+  }
+}

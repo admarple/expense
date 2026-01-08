@@ -15,13 +15,20 @@ java {
     }
 }
 
+springBoot {
+    mainClass.set("com.amarple.expense.ExpenseApplicationKt")
+}
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("commons-cli:commons-cli")
+    implementation("commons-cli:commons-cli:1.11.0")
+    implementation("org.springframework.boot:spring-boot-starter")
+    implementation("com.fasterxml.jackson.core:jackson-databind")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-csv")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")

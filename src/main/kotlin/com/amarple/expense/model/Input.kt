@@ -1,0 +1,36 @@
+package com.amarple.expense.model
+
+import java.time.LocalDate
+
+/**
+ * TODO: change properties to val if it plays nicely with Jackson serializer
+ */
+data class ImportInput(
+    var reports: List<ExpenseReportInput>,
+    var expectedExpenses: ExpectedExpensesInput,
+    var categories: CategoriesInput,
+)
+
+data class ExpenseReportInput(
+    val path: String,
+    val source: String,
+    val retrievalDate: LocalDate? = null,
+)
+
+data class ExpectedExpensesInput(
+    val path: String,
+    val descriptionPatterns: DescriptionPatternExpectedExpensesInput,
+)
+
+data class DescriptionPatternExpectedExpensesInput(
+    val path: String,
+)
+
+data class CategoriesInput(
+    val path: String,
+    val descriptionPatterns: DescriptionPatternCategoryInput,
+)
+
+data class DescriptionPatternCategoryInput(
+    val path: String,
+)
