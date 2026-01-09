@@ -4,5 +4,5 @@ import com.amarple.expense.model.ExpenseReportInput
 import com.amarple.expense.model.internal.ExpenseReport
 
 interface ExpenseReportReader {
-    fun read(input: ExpenseReportInput): ExpenseReport
+    fun read(input: ExpenseReportInput): ExpenseReport<*>
 }

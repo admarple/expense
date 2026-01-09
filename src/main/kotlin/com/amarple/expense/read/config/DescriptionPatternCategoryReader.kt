@@ -10,8 +10,12 @@ import java.io.File
 
 class DescriptionPatternCategoryReader {
     fun read(input: DescriptionPatternCategoryInput): List<DescriptionPatternCategory> {
-        val schema: CsvSchema = csvMapper.schemaFor(DescriptionPatternCategoryLine::class.java)
-        return csvMapper.reader()
+        val schema: CsvSchema = csvMapper
+            .typedSchemaFor(DescriptionPatternCategoryLine::class.java)
+            .withHeader()
+            .withColumnReordering(true)
+
+        return csvMapper.readerFor(DescriptionPatternCategoryLine::class.java)
             .with(schema)
             .readValues<DescriptionPatternCategoryLine>(File(input.path))
             .asSequence()
@@ -24,11 +28,14 @@ class DescriptionPatternCategoryReader {
  * TODO: move to the model package (since this is part of the input)?
  */
 data class DescriptionPatternCategoryLine(
-    @JsonProperty("pattern") var pattern: String,
-    @JsonProperty("category") var category: String,
-    @JsonProperty("subcategory") var subcategory: String,
+    @JsonProperty("pattern")
+    val pattern: String,
+    @JsonProperty("category")
+    val category: String,
+    @JsonProperty("subcategory")
+    val subcategory: String,
 ) {
-    fun getCategory() = Category(category, subcategory)
+    fun buildCategory() = Category(category, subcategory)
 
-    fun toDescriptionPattern() = DescriptionPatternCategory(pattern, getCategory())
+    fun toDescriptionPattern() = DescriptionPatternCategory(pattern, buildCategory())
 }

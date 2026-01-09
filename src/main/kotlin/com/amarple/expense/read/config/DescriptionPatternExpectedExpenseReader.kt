@@ -9,8 +9,12 @@ import java.io.File
 
 class DescriptionPatternExpectedExpenseReader {
     fun read(input: DescriptionPatternExpectedExpensesInput): List<DescriptionPatternExpectedExpense> {
-        val schema: CsvSchema = csvMapper.schemaFor(DescriptionPatternExpectedExpenseLine::class.java)
-        return csvMapper.reader()
+        val schema: CsvSchema = csvMapper
+            .typedSchemaFor(DescriptionPatternExpectedExpenseLine::class.java)
+            .withHeader()
+            .withColumnReordering(true)
+
+        return csvMapper.readerFor(DescriptionPatternExpectedExpenseLine::class.java)
             .with(schema)
             .readValues<DescriptionPatternExpectedExpenseLine>(File(input.path))
             .asSequence()
@@ -24,8 +28,10 @@ class DescriptionPatternExpectedExpenseReader {
  * TODO: move to the model package (since this is part of the input)?
  */
 data class DescriptionPatternExpectedExpenseLine(
-    @JsonProperty("pattern") var pattern: String,
-    @JsonProperty("transactionName") var transactionName: String,
+    @JsonProperty("pattern")
+    val pattern: String,
+    @JsonProperty("transactionName")
+    val transactionName: String,
 ) {
     fun toDescriptionPattern() = DescriptionPatternExpectedExpense(pattern, transactionName)
 }

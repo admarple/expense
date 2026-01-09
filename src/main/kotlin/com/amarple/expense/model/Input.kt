@@ -6,9 +6,9 @@ import java.time.LocalDate
  * TODO: change properties to val if it plays nicely with Jackson serializer
  */
 data class ImportInput(
-    var reports: List<ExpenseReportInput>,
-    var expectedExpenses: ExpectedExpensesInput,
-    var categories: CategoriesInput,
+    val reports: List<ExpenseReportInput>,
+    val expectedExpenses: ExpectedExpensesInput,
+    val categories: CategoriesInput,
 )
 
 data class ExpenseReportInput(

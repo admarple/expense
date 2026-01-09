@@ -6,15 +6,20 @@ import com.amarple.expense.model.internal.ExpenseReport
 import com.amarple.expense.model.internal.PaymentInstrument
 import com.amarple.expense.model.internal.Transaction
 import com.amarple.expense.read.Jackson.csvMapper
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.dataformat.csv.CsvSchema
 import java.io.File
 import java.time.LocalDate
 
 class DiscoverExpenseReportReader : ExpenseReportReader {
-    override fun read(input: ExpenseReportInput): ExpenseReport {
-        val schema: CsvSchema = csvMapper.schemaFor(DiscoverExpenseLine::class.java)
-        val expenseLines = csvMapper.reader()
+    override fun read(input: ExpenseReportInput): ExpenseReport<DiscoverTransaction> {
+        val schema: CsvSchema = csvMapper
+            .typedSchemaFor(DiscoverExpenseLine::class.java)
+            .withHeader()
+            .withColumnReordering(true)
+
+        val expenseLines = csvMapper.readerFor(DiscoverExpenseLine::class.java)
             .with(schema)
             .readValues<DiscoverExpenseLine>(File(input.path))
             .asSequence()
@@ -29,14 +34,21 @@ class DiscoverExpenseReportReader : ExpenseReportReader {
 }
 
 data class DiscoverExpenseLine(
-    @JsonProperty("Trans. Date") var transactionDate: String,
-    @JsonProperty("Post Date") var localDate: String,
-    @JsonProperty("Description") var description: String? = null,
+    @JsonProperty("Trans. Date")
+    @JsonFormat(pattern = "M/d/uu")
+    val transactionDate: LocalDate,
+    @JsonProperty("Post Date")
+    @JsonFormat(pattern = "M/d/uu")
+    val localDate: LocalDate,
+    @JsonProperty("Description")
+    val description: String? = null,
     /**
      * In Discover's CSV, a positive amount represents a charge. A negative amount represents a payment or credit.
      */
-    @JsonProperty("Amount") var amount: Double,
-    @JsonProperty("Category") var discoverCategoryName: String? = null,
+    @JsonProperty("Amount")
+    val amount: Double,
+    @JsonProperty("Category")
+    val discoverCategoryName: String? = null,
 )
 
 enum class DiscoverCategory(val displayName: String?) {
@@ -70,8 +82,8 @@ data class DiscoverTransaction(
     val discoverCategory: DiscoverCategory = DiscoverCategory.lookupByDisplayName(discoverCategoryName)
 
     constructor(discoverExpenseLine: DiscoverExpenseLine, source: String? = null): this(
-        transactionDate = LocalDate.parse(discoverExpenseLine.transactionDate),
-        postDate = LocalDate.parse(discoverExpenseLine.localDate),
+        transactionDate = discoverExpenseLine.transactionDate,
+        postDate = discoverExpenseLine.localDate,
         // Discover's CSV uses positive amounts for debts, so we must negate the amount
         amount = discoverExpenseLine.amount * -1,
         description = discoverExpenseLine.description ?: "",

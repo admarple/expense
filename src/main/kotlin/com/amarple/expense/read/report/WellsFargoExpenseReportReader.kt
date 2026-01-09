@@ -4,7 +4,7 @@ import com.amarple.expense.model.ExpenseReportInput
 import com.amarple.expense.model.internal.ExpenseReport
 
 class WellsFargoExpenseReportReader : ExpenseReportReader {
-    override fun read(input: ExpenseReportInput): ExpenseReport {
+    override fun read(input: ExpenseReportInput): ExpenseReport<*> {
         TODO("Not yet implemented")
     }
 }

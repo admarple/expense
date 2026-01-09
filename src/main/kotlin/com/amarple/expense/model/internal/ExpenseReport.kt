@@ -2,8 +2,7 @@ package com.amarple.expense.model.internal
 
 import java.time.LocalDate
 
-data class ExpenseReport(
-    val transactions: List<Transaction>,
+data class ExpenseReport<T : Transaction>(
+    val transactions: List<T>,
     val retrievalDate: LocalDate? = null
 )
-

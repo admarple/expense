@@ -41,7 +41,7 @@ class ImportCommandLineRunner : CommandLineRunner {
 
             val importOutput = ImportTask().execute(importInput)
 
-            mapper.writeValueAsString(importOutput)
+            println(mapper.writeValueAsString(importOutput))
         } catch (e: ParseException) {
             println(e.message)
             formatter.printHelp("xp-import", "", options, "", true)

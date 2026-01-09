@@ -13,8 +13,12 @@ import java.time.LocalDate
 
 class UberSheetExpectedExpenseReader : ExpectedExpenseReader {
     override fun read(input: ExpectedExpensesInput): List<ExpectedExpense> {
-        val schema: CsvSchema = csvMapper.schemaFor(UberSheetExpectedExpense::class.java)
-        return csvMapper.reader()
+        val schema: CsvSchema = csvMapper
+            .typedSchemaFor(UberSheetExpectedExpense::class.java)
+            .withHeader()
+            .withColumnReordering(true)
+
+        return csvMapper.readerFor(UberSheetExpectedExpense::class.java)
             .with(schema)
             .readValues<UberSheetExpectedExpense>(File(input.path))
             .asSequence()
@@ -27,11 +31,16 @@ class UberSheetExpectedExpenseReader : ExpectedExpenseReader {
  * TODO: move to the model package (since this is part of the input)?
  */
 data class UberSheetExpectedExpense(
-    @JsonProperty("Category") var category: String? = null,
-    @JsonProperty("Subcategory") var subcategory: String? = null,
-    @JsonProperty("Payment Instrument") var instrument: String? = null,
-    @JsonProperty("Name") var name: String,
-    @JsonProperty("Amount") var amount: Double? = null,
+    @JsonProperty("Category")
+    val category: String? = null,
+    @JsonProperty("Subcategory")
+    val subcategory: String? = null,
+    @JsonProperty("Payment Instrument")
+    val instrument: String? = null,
+    @JsonProperty("Name")
+    val name: String,
+    @JsonProperty("Amount")
+    val amount: Double? = null,
 ) {
     fun toExpectedExpense(): ExpectedExpense {
         return ExpectedExpense(
