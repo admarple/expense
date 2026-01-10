@@ -6,12 +6,14 @@ import com.amarple.expense.model.DescriptionPatternExpectedExpensesInput
 import com.amarple.expense.model.CategoriesInput
 import com.amarple.expense.model.DescriptionPatternCategoryInput
 import com.amarple.expense.model.ExpenseReportInput
+import com.amarple.expense.model.internal.Category
 import com.amarple.expense.read.report.ExpenseReportType
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
+import kotlin.test.assertContains
 
 class ImportTaskComponentTest {
     lateinit var discoverExpensesCsvPath: String
@@ -62,5 +64,22 @@ class ImportTaskComponentTest {
 
         assertNotNull(result)
         assertEquals(6, result.expectedExpenses.size)
+        val matchedExpenses = result.expectedExpenses.filterNotNull()
+        assertEquals(2, matchedExpenses.size)
+
+        assertEquals("WhiteTail (Waste)", matchedExpenses[0].description)
+        assertEquals(-13.0, result.expectedExpenses.filterNotNull()[0].amount)
+        assertEquals("Alex's Discover", matchedExpenses[0].instrument?.name)
+        assertEquals(Category("Utilities", "Miscellaneous"), matchedExpenses[0].category)
+
+        assertEquals("GasTec (Propane)", matchedExpenses[1].description)
+        assertEquals(-12.34, matchedExpenses[1].amount)
+        assertEquals("Alex's Discover", matchedExpenses[1].instrument?.name)
+        assertEquals(Category("Utilities", "Miscellaneous"), matchedExpenses[1].category)
+
+        assertEquals(3, result.categorizedExpenses.size)
+        assertContains(result.categorizedExpenses.map { it.category }, Category("Financial_Services", "Fines & Fees"))
+        assertContains(result.categorizedExpenses.map { it.category }, Category("Transportation", "Public Transit"))
+        assertContains(result.categorizedExpenses.map { it.category }, Category("Grocery", "Miscellaneous"))
     }
 }

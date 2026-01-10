@@ -8,6 +8,7 @@ import com.amarple.expense.category.DiscoverCategoryCategorizer
 import com.amarple.expense.expected.DescriptionPatternExpectedExpenseMatcher
 import com.amarple.expense.model.ImportInput
 import com.amarple.expense.model.ImportOutput
+import com.amarple.expense.model.internal.BasicTransaction
 import com.amarple.expense.model.internal.ExpectedExpense
 import com.amarple.expense.model.internal.ExpenseReport
 import com.amarple.expense.model.internal.Transaction
@@ -88,7 +89,17 @@ class ImportTask(
         // 7. Build the response, including ...
         // 7.a. ... a list of transactions for expected expenses, in the same order as config, with null to designate expenses where no transaction was matched
         val expectedResults = expectedExpenses.mapIndexed { index, expense ->
-            matchedTransactions[index]?.firstOrNull()?.updateCategory(category = expense.expectedTransaction.category)
+            matchedTransactions[index]?.firstOrNull()
+                ?.updateCategory(category = expense.expectedTransaction.category)
+                ?.let {
+                    BasicTransaction(
+                        description = expense.name,
+                        amount = it.amount,
+                        date = it.date,
+                        category = it.category,
+                        instrument = it.instrument,
+                    )
+                }
         }
 
         // 7.e. ... warnings for ...
