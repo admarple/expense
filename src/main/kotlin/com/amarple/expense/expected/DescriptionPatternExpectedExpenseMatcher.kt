@@ -9,7 +9,7 @@ class DescriptionPatternExpectedExpenseMatcher(
     private val regexes = patterns
         .map { Pair(Regex(it.pattern), it.expenseName) }
 
-    override fun <E : Transaction<E>, T : Transaction<T>> isMatch(expectedExpense: ExpectedExpense<E>, transaction: T): Boolean {
+    override fun <E : Transaction<E>, T : Transaction<*>> isMatch(expectedExpense: ExpectedExpense<E>, transaction: T): Boolean {
         return regexes.any { it.second == expectedExpense.name && it.first.containsMatchIn(transaction.description) }
     }
 }

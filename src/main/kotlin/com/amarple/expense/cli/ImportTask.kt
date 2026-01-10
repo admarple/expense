@@ -6,6 +6,7 @@ import com.amarple.expense.category.DescriptionPatternCategorizer
 import com.amarple.expense.expected.DescriptionPatternExpectedExpenseMatcher
 import com.amarple.expense.model.ImportInput
 import com.amarple.expense.model.ImportOutput
+import com.amarple.expense.model.internal.ExpectedExpense
 import com.amarple.expense.model.internal.ExpenseReport
 import com.amarple.expense.model.internal.Transaction
 import com.amarple.expense.read.config.DescriptionPatternCategoryReader
@@ -52,8 +53,8 @@ class ImportTask(
         val matchedTransactions = mutableMapOf<Int, MutableList<Transaction<*>>>() // Index of expected expense to transactions
         val transactionToMatchedExpectedIndexes = mutableMapOf<Transaction<*>, MutableList<Int>>()
 
-        expectedExpenses.forEachIndexed { index, expectedExpense ->
-            expectedExpenseMatcher.match(expectedExpense, allTransactions).forEach { transaction ->
+        expectedExpenses.forEachIndexed { index, expectedExpense: ExpectedExpense<*> ->
+            expectedExpenseMatcher.match(expectedExpense, allTransactions).forEach { transaction: Transaction<*> ->
                 matchedTransactions.getOrPut(index) { mutableListOf() }.add(transaction)
                 transactionToMatchedExpectedIndexes.getOrPut(transaction) { mutableListOf() }.add(index)
             }
@@ -68,7 +69,7 @@ class ImportTask(
         // 6. Calculate new AggregatedTransactions
         // 6.a. Exclude transactions that have already been matched to expected expenses ...
         val unmatchedTransactions = allTransactions.filter { !transactionToMatchedExpectedIndexes.containsKey(it) }
-        val categorizedTransactions = unmatchedTransactions.map { transaction ->
+        val categorizedTransactions = unmatchedTransactions.map { transaction: Transaction<*> ->
             val category = categorizer.categorize(transaction)
             if (category != null) {
                 transaction.updateCategory(category = category)

@@ -16,7 +16,7 @@ class DescriptionPatternExpectedExpenseMatcherTest {
             DescriptionPatternExpectedExpense("^NETFLIX", "Subscriptions")
         )
 
-        val matcher = DescriptionPatternExpectedExpenseMatcher<BasicTransaction>(patterns)
+        val matcher = DescriptionPatternExpectedExpenseMatcher(patterns)
 
         val tRent = BasicTransaction(LocalDate.now(), -1000.0, "APARTMENT RENT", null, null)
         val tNetflix = BasicTransaction(LocalDate.now(), -15.0, "NETFLIX.COM", null, null)

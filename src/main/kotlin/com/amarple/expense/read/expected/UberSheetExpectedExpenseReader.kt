@@ -12,7 +12,7 @@ import java.io.File
 import java.time.LocalDate
 
 class UberSheetExpectedExpenseReader : ExpectedExpenseReader {
-    override fun read(input: ExpectedExpensesInput): List<ExpectedExpense> {
+    override fun read(input: ExpectedExpensesInput): List<ExpectedExpense<*>> {
         val schema: CsvSchema = csvMapper
             .typedSchemaFor(UberSheetExpectedExpense::class.java)
             .withHeader()
@@ -42,15 +42,15 @@ data class UberSheetExpectedExpense(
     @JsonProperty("Amount")
     val amount: Double? = null,
 ) {
-    fun toExpectedExpense(): ExpectedExpense {
+    fun toExpectedExpense(): ExpectedExpense<*> {
         return ExpectedExpense(
             name = name,
             expectedTransaction = BasicTransaction(
                 date = LocalDate.now(),
                 amount = amount ?: 0.0,
                 description = name,
-                category = if (category != null && subcategory != null) Category(category!!, subcategory!!) else null,
-                instrument = if (instrument != null) PaymentInstrument(instrument!!) else null,
+                category = if (category != null && subcategory != null) Category(category, subcategory) else null,
+                instrument = if (instrument != null) PaymentInstrument(instrument) else null,
             )
         )
     }

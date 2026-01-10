@@ -19,7 +19,7 @@ class DescriptionPatternCategorizerTest {
             DescriptionPatternCategory(".*SAFEWAY.*", category2)
         )
 
-        val categorizer = DescriptionPatternCategorizer<BasicTransaction>(patterns)
+        val categorizer = DescriptionPatternCategorizer(patterns)
 
         val t1 = BasicTransaction(LocalDate.now(), -10.0, "AMAZON.COM*123", null, null)
         val t2 = BasicTransaction(LocalDate.now(), -20.0, "SAFEWAY STORE 456", null, null)
@@ -40,7 +40,7 @@ class DescriptionPatternCategorizerTest {
             DescriptionPatternCategory(".*", category2)
         )
 
-        val categorizer = DescriptionPatternCategorizer<BasicTransaction>(patterns)
+        val categorizer = DescriptionPatternCategorizer(patterns)
 
         val t = BasicTransaction(LocalDate.now(), -10.0, "THIS IS A MATCH", null, null)
 
