@@ -1,8 +1,13 @@
 package com.amarple.expense.model
 
-/**
- * TODO: add the results, rather than just a path where output is written
- */
+import com.amarple.expense.model.internal.Transaction
+import java.time.YearMonth
+
 data class ImportOutput(
-    val path: String
+    val expectedExpenses: List<Transaction<*>?>,
+    val categorizedExpenses: List<Transaction<*>>,
+    val outgoingTransfers: List<Transaction<*>>,
+    val incomingDeposits: List<Transaction<*>>,
+    val warnings: List<String>,
+    val month: YearMonth?,
 )

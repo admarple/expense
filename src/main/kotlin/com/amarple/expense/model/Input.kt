@@ -1,5 +1,6 @@
 package com.amarple.expense.model
 
+import com.amarple.expense.read.report.ExpenseReportType
 import java.time.LocalDate
 
 /**
@@ -15,6 +16,7 @@ data class ExpenseReportInput(
     val path: String,
     val source: String,
     val retrievalDate: LocalDate? = null,
+    val reportType: ExpenseReportType,
 )
 
 data class ExpectedExpensesInput(
@@ -27,7 +29,7 @@ data class DescriptionPatternExpectedExpensesInput(
 )
 
 data class CategoriesInput(
-    val path: String,
+    // val path: String,
     val descriptionPatterns: DescriptionPatternCategoryInput,
 )
 

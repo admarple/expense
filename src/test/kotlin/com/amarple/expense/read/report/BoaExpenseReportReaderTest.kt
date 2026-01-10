@@ -9,7 +9,7 @@ class BoaExpenseReportReaderTest {
     fun `read should throw NotImplementedError`() {
         val reader = BoaExpenseReportReader()
         assertThrows<NotImplementedError> {
-            reader.read(ExpenseReportInput("", "Boa"))
+            reader.read(ExpenseReportInput("", "Boa", reportType = ExpenseReportType.BankOfAmerica))
         }
     }
 }

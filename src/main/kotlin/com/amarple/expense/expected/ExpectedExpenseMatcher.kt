@@ -3,14 +3,14 @@ package com.amarple.expense.expected
 import com.amarple.expense.model.internal.ExpectedExpense
 import com.amarple.expense.model.internal.Transaction
 
-interface ExpectedExpenseMatcher<T : Transaction> {
-    fun match(expectedExpense: ExpectedExpense, transactions: List<T>): List<T> {
+interface ExpectedExpenseMatcher {
+    fun <E : Transaction<E>, T : Transaction<T>> match(expectedExpense: ExpectedExpense<E>, transactions: List<T>): List<T> {
         return transactions.filter { isMatch(expectedExpense, it) }
     }
 
-    fun match(expectedExpenses: List<ExpectedExpense>, transaction: T): List<ExpectedExpense> {
+    fun <E : Transaction<E>, T : Transaction<T>> match(expectedExpenses: List<ExpectedExpense<E>>, transaction: T): List<ExpectedExpense<E>> {
         return expectedExpenses.filter { isMatch(it, transaction) }
     }
 
-    fun isMatch(expectedExpense: ExpectedExpense, transaction: T): Boolean
+    fun <E : Transaction<E>, T : Transaction<T>> isMatch(expectedExpense: ExpectedExpense<E>, transaction: T): Boolean
 }

@@ -12,8 +12,8 @@ class DescriptionPatternExpectedExpenseMatcherTest {
     @Test
     fun `should match transaction based on description pattern and expense name`() {
         val patterns = listOf(
-            DescriptionPatternExpectedExpense(".*RENT.*", "Rent"),
-            DescriptionPatternExpectedExpense(".*NETFLIX.*", "Subscriptions")
+            DescriptionPatternExpectedExpense("RENT$", "Rent"),
+            DescriptionPatternExpectedExpense("^NETFLIX", "Subscriptions")
         )
 
         val matcher = DescriptionPatternExpectedExpenseMatcher<BasicTransaction>(patterns)

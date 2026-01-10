@@ -9,7 +9,7 @@ class AmExExpenseReportReaderTest {
     fun `read should throw NotImplementedError`() {
         val reader = AmExExpenseReportReader()
         assertThrows<NotImplementedError> {
-            reader.read(ExpenseReportInput("", "AmEx"))
+            reader.read(ExpenseReportInput("", "AmEx", reportType = ExpenseReportType.AmericanExpress))
         }
     }
 }

@@ -9,7 +9,7 @@ class CapitalOneExpenseReportReaderTest {
     fun `read should throw NotImplementedError`() {
         val reader = CapitalOneExpenseReportReader()
         assertThrows<NotImplementedError> {
-            reader.read(ExpenseReportInput("", "CapitalOne"))
+            reader.read(ExpenseReportInput("", "CapitalOne", reportType = ExpenseReportType.CapitalOne))
         }
     }
 }

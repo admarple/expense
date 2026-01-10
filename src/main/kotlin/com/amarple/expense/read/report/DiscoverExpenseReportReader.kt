@@ -77,8 +77,9 @@ data class DiscoverTransaction(
     val discoverCategoryName: String? = null,
     override val category: Category? = null,
     override val instrument: PaymentInstrument? = null,
-): Transaction {
+): Transaction<DiscoverTransaction> {
     override val date: LocalDate = transactionDate
+
     val discoverCategory: DiscoverCategory = DiscoverCategory.lookupByDisplayName(discoverCategoryName)
 
     constructor(discoverExpenseLine: DiscoverExpenseLine, source: String? = null): this(
@@ -90,4 +91,8 @@ data class DiscoverTransaction(
         discoverCategoryName = discoverExpenseLine.discoverCategoryName,
         instrument = source?.let { PaymentInstrument(it) },
     )
+
+    override fun updateCategory(category: Category?): DiscoverTransaction {
+        return copy(category = category)
+    }
 }

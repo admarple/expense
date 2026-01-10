@@ -11,7 +11,7 @@ class DiscoverExpenseReportReaderTest {
     fun `should read Discover expenses from CSV`() {
         val csvPath = this::class.java.getResource("/discover_expenses.csv")!!.path
         val reader = DiscoverExpenseReportReader()
-        val result = reader.read(ExpenseReportInput(csvPath, "Alex's Discover"))
+        val result = reader.read(ExpenseReportInput(csvPath, "Alex's Discover", reportType = ExpenseReportType.Discover))
 
         assertEquals(7, result.transactions.size)
 

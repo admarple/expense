@@ -1,6 +1,6 @@
 package com.amarple.expense.model.internal
 
-data class ExpectedExpense(
+data class ExpectedExpense<T : Transaction<T>>(
     val name: String,
-    val expectedTransaction: Transaction,
+    val expectedTransaction: T,
 )

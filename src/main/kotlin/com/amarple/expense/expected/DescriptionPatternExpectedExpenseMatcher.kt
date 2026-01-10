@@ -3,14 +3,14 @@ package com.amarple.expense.expected
 import com.amarple.expense.model.internal.ExpectedExpense
 import com.amarple.expense.model.internal.Transaction
 
-class DescriptionPatternExpectedExpenseMatcher<T : Transaction>(
+class DescriptionPatternExpectedExpenseMatcher(
     private val patterns: List<DescriptionPatternExpectedExpense>
-) : ExpectedExpenseMatcher<T> {
+) : ExpectedExpenseMatcher {
     private val regexes = patterns
         .map { Pair(Regex(it.pattern), it.expenseName) }
 
-    override fun isMatch(expectedExpense: ExpectedExpense, transaction: T): Boolean {
-        return regexes.any { it.second == expectedExpense.name && it.first.matches(transaction.description) }
+    override fun <E : Transaction<E>, T : Transaction<T>> isMatch(expectedExpense: ExpectedExpense<E>, transaction: T): Boolean {
+        return regexes.any { it.second == expectedExpense.name && it.first.containsMatchIn(transaction.description) }
     }
 }
 
