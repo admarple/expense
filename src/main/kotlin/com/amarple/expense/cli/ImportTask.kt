@@ -5,10 +5,12 @@ import com.amarple.expense.category.AggregateByCategoryAndInstrument
 import com.amarple.expense.category.BespokeCategorizer
 import com.amarple.expense.category.DescriptionPatternCategorizer
 import com.amarple.expense.category.DiscoverCategoryCategorizer
+import com.amarple.expense.category.StaticCategorizer
 import com.amarple.expense.expected.DescriptionPatternExpectedExpenseMatcher
 import com.amarple.expense.model.ImportInput
 import com.amarple.expense.model.ImportOutput
 import com.amarple.expense.model.internal.BasicTransaction
+import com.amarple.expense.model.internal.Category
 import com.amarple.expense.model.internal.ExpectedExpense
 import com.amarple.expense.model.internal.ExpenseReport
 import com.amarple.expense.model.internal.Transaction
@@ -67,6 +69,7 @@ class ImportTask(
         val categorizer = BespokeCategorizer(
             DiscoverCategoryCategorizer(),
             DescriptionPatternCategorizer(categoryPatterns),
+            StaticCategorizer(Category("Entertainment", "Miscellaneous"))
         )
         // 5.a. TODO: configure the logic for categorizing transactions from each report, e.g. DiscoverCategoryCategorizer can only be used for Discover reports
         // 5.b. TODO: find a way to categorize auto-payments so that we can exclude them
@@ -92,6 +95,8 @@ class ImportTask(
             matchedTransactions[index]?.firstOrNull()
                 ?.updateCategory(category = expense.expectedTransaction.category)
                 ?.let {
+                    // This is the point at which the Transaction from the report is dropped
+                    // TODO: should we preserve the transaction from the report?
                     BasicTransaction(
                         description = expense.name,
                         amount = it.amount,

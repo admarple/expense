@@ -17,6 +17,7 @@ import kotlin.test.assertContains
 
 class ImportTaskComponentTest {
     lateinit var discoverExpensesCsvPath: String
+    lateinit var boaExpensesCsvPath: String
     lateinit var expectedExpensesCsvPath: String
     lateinit var expectedExpensesPatternsCsvPath: String
     lateinit var categoryPatternsCsvPath: String
@@ -24,6 +25,7 @@ class ImportTaskComponentTest {
     @BeforeEach
     fun setUp() {
         discoverExpensesCsvPath = this::class.java.getResource("/discover_expenses.csv")!!.path
+        boaExpensesCsvPath = this::class.java.getResource("/boa_expenses.csv")!!.path
         expectedExpensesCsvPath = this::class.java.getResource("/expected_expenses.csv")!!.path
         expectedExpensesPatternsCsvPath = this::class.java.getResource("/expected_expenses_description_patterns.csv")!!.path
         categoryPatternsCsvPath = this::class.java.getResource("/category_description_patterns.csv")!!.path
@@ -54,7 +56,13 @@ class ImportTaskComponentTest {
                     source = "Alex's Discover",
                     retrievalDate = LocalDate.now(),
                     reportType = ExpenseReportType.Discover,
-                )
+                ),
+                ExpenseReportInput(
+                    path = boaExpensesCsvPath,
+                    source = "Alex's Bank of America",
+                    retrievalDate = LocalDate.now(),
+                    reportType = ExpenseReportType.BankOfAmerica,
+                ),
             ),
             expectedExpenses = ExpectedExpensesInput(expectedExpensesCsvPath, DescriptionPatternExpectedExpensesInput(expectedExpensesPatternsCsvPath)),
             categories = CategoriesInput( DescriptionPatternCategoryInput(categoryPatternsCsvPath))
@@ -77,9 +85,13 @@ class ImportTaskComponentTest {
         assertEquals("Alex's Discover", matchedExpenses[1].instrument?.name)
         assertEquals(Category("Utilities", "Miscellaneous"), matchedExpenses[1].category)
 
-        assertEquals(3, result.categorizedExpenses.size)
+        assertEquals(6, result.categorizedExpenses.size)
         assertContains(result.categorizedExpenses.map { it.category }, Category("Financial_Services", "Fines & Fees"))
         assertContains(result.categorizedExpenses.map { it.category }, Category("Transportation", "Public Transit"))
         assertContains(result.categorizedExpenses.map { it.category }, Category("Grocery", "Miscellaneous"))
+        assertContains(result.categorizedExpenses.map { it.category }, Category("Gifts", "Friends & Family"))
+        assertContains(result.categorizedExpenses.map { it.category }, Category("Entertainment", "Restaurants & Bars"))
+        // Transactions not categorized will default to "Entertainment"/"Miscellaneous", per BespokeCategorizer
+        assertContains(result.categorizedExpenses.map { it.category }, Category("Entertainment", "Miscellaneous"))
     }
 }

@@ -12,11 +12,13 @@ import com.amarple.expense.model.internal.Transaction
 class BespokeCategorizer(
     private val discoverCategoryCategorizer: DiscoverCategoryCategorizer,
     private val descriptionPatternCategorizer: DescriptionPatternCategorizer,
+    private val defaultCategorizer: StaticCategorizer,
 ): TransactionCategorizer {
     override fun <T : Transaction<*>> categorize(transaction: T): Category? {
-        return transaction.let {
-            descriptionPatternCategorizer.categorize(it)
-                ?: discoverCategoryCategorizer.categorize(it)
-        }
+        return listOf(
+            descriptionPatternCategorizer,
+            discoverCategoryCategorizer,
+            defaultCategorizer
+        ).firstNotNullOf { it.categorize(transaction) }
     }
 }
