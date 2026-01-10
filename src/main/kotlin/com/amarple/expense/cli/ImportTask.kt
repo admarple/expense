@@ -22,6 +22,7 @@ import com.amarple.expense.read.report.BoaExpenseReportReader
 import com.amarple.expense.read.report.DiscoverExpenseReportReader
 import com.amarple.expense.read.report.ExpenseReportReaderSelector
 import com.amarple.expense.read.report.ExpenseReportType
+import com.amarple.expense.read.report.WellsFargoExpenseReportReader
 import java.time.YearMonth
 import kotlin.collections.firstOrNull
 import kotlin.collections.forEachIndexed
@@ -34,7 +35,7 @@ class ImportTask(
         mapOf(
             ExpenseReportType.Discover to DiscoverExpenseReportReader(),
             ExpenseReportType.BankOfAmerica to BoaExpenseReportReader(),
-            ExpenseReportType.WellsFargo to BoaExpenseReportReader(),
+            ExpenseReportType.WellsFargo to WellsFargoExpenseReportReader(),
         )
     ),
     private val aggregator: AggregateBy = AggregateByCategoryAndInstrument

@@ -12,6 +12,7 @@ object Jackson {
             it.registerModule(JavaTimeModule())
         }
     }
+
     val mapper by lazy {
         ObjectMapper().also {
             it.registerKotlinModule()
