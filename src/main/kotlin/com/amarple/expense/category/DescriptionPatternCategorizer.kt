@@ -11,7 +11,7 @@ class DescriptionPatternCategorizer(
 
     override fun <T : Transaction<*>> categorize(transaction: T): Category? {
         return regexes
-            .firstOrNull { it.first.matches(transaction.description) }
+            .firstOrNull { it.first.containsMatchIn(transaction.description) }
             ?.let { return it.second }
     }
 }

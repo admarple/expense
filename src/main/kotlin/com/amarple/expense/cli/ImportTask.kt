@@ -2,7 +2,9 @@ package com.amarple.expense.cli
 
 import com.amarple.expense.category.AggregateBy
 import com.amarple.expense.category.AggregateByCategoryAndInstrument
+import com.amarple.expense.category.BespokeCategorizer
 import com.amarple.expense.category.DescriptionPatternCategorizer
+import com.amarple.expense.category.DiscoverCategoryCategorizer
 import com.amarple.expense.expected.DescriptionPatternExpectedExpenseMatcher
 import com.amarple.expense.model.ImportInput
 import com.amarple.expense.model.ImportOutput
@@ -61,7 +63,10 @@ class ImportTask(
         }
 
         // 5. Try to categorize transactions from the reports
-        val categorizer = DescriptionPatternCategorizer(categoryPatterns)
+        val categorizer = BespokeCategorizer(
+            DiscoverCategoryCategorizer(),
+            DescriptionPatternCategorizer(categoryPatterns),
+        )
         // 5.a. TODO: configure the logic for categorizing transactions from each report, e.g. DiscoverCategoryCategorizer can only be used for Discover reports
         // 5.b. TODO: find a way to categorize auto-payments so that we can exclude them
         // 5.c. TODO: find a way to categorize incoming deposits and outgoing transfers so that we can return them separately
