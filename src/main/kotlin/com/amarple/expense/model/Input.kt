@@ -31,8 +31,13 @@ data class DescriptionPatternExpectedExpensesInput(
 data class CategoriesInput(
     // val path: String,
     val descriptionPatterns: DescriptionPatternCategoryInput,
+    val amExCategories: AmExCategoryInput? = null,
 )
 
 data class DescriptionPatternCategoryInput(
+    val path: String,
+)
+
+data class AmExCategoryInput(
     val path: String,
 )

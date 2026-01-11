@@ -1,0 +1,14 @@
+amExCategory,amExSubcategory,category,subcategory
+Restaurant,Restaurant,Entertainment,Restaurants & Bars
+Restaurant,Bar & Café,Entertainment,Restaurants & Bars
+Restaurant,,Entertainment,Restaurants & Bars
+Business Services,Insurance Services,Financial_Services,Insurance
+Business Services,Health Care Services,Health,Physical Healthcare
+Merchandise & Supplies,Internet Purchase,Shopping,Miscellaneous
+Merchandise & Supplies,Clothing Stores,Shopping,Clothing
+Merchandise & Supplies,Pharmacies,Health,Physical Healthcare
+Merchandise & Supplies,Groceries,Grocery,Basics
+Travel,Lodging,Travel,Miscellaneous
+Transportation,Taxis & Coach,Transportation,Rideshare
+Transportation,Fuel,Transportation,Car
+Entertainment,Theatrical Events,Entertainment,Concerts & Events

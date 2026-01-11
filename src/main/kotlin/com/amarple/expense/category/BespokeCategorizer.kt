@@ -11,6 +11,7 @@ import com.amarple.expense.model.internal.Transaction
  */
 class BespokeCategorizer(
     private val discoverCategoryCategorizer: DiscoverCategoryCategorizer,
+    private val amExCategoryCategorizer: AmExCategoryCategorizer,
     private val descriptionPatternCategorizer: DescriptionPatternCategorizer,
     private val defaultCategorizer: StaticCategorizer,
 ): TransactionCategorizer {
@@ -18,6 +19,7 @@ class BespokeCategorizer(
         return listOf(
             descriptionPatternCategorizer,
             discoverCategoryCategorizer,
+            amExCategoryCategorizer,
             defaultCategorizer
         ).firstNotNullOf { it.categorize(transaction) }
     }
