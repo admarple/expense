@@ -33,6 +33,7 @@ data class CategoriesInput(
     val descriptionPatterns: DescriptionPatternCategoryInput,
     val amExCategories: AmExCategoryInput? = null,
     val capitalOneCategories: CapitalOneCategoryInput? = null,
+    val chaseCategories: ChaseCategoryInput? = null,
 )
 
 data class DescriptionPatternCategoryInput(
@@ -44,5 +45,9 @@ data class AmExCategoryInput(
 )
 
 data class CapitalOneCategoryInput(
+    val path: String,
+)
+
+data class ChaseCategoryInput(
     val path: String,
 )

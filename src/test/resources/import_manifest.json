@@ -29,6 +29,12 @@
       "source": "Holly's Capital One Quicksilver",
       "retrievalDate": "2026-01-06",
       "reportType": "CapitalOne"
+    },
+    {
+      "path": "chase_expenses.csv",
+      "source": "Holly's Chase Slate",
+      "retrievalDate": "2026-01-06",
+      "reportType": "Chase"
     }
   ],
   "expectedExpenses": {
@@ -46,6 +52,9 @@
     },
     "capitalOneCategories": {
       "path": "capitalone_categories.csv"
+    },
+    "chaseCategories": {
+      "path": "chase_categories.csv"
     }
   }
 }

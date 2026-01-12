@@ -2,6 +2,7 @@ package com.amarple.expense.cli
 
 import com.amarple.expense.model.AmExCategoryInput
 import com.amarple.expense.model.CapitalOneCategoryInput
+import com.amarple.expense.model.ChaseCategoryInput
 import com.amarple.expense.model.ImportInput
 import com.amarple.expense.model.ExpectedExpensesInput
 import com.amarple.expense.model.DescriptionPatternExpectedExpensesInput
@@ -23,11 +24,13 @@ class ImportTaskComponentTest {
     lateinit var wellsFargoExpensesCsvPath: String
     lateinit var amExExpensesCsvPath: String
     lateinit var capitalOneExpensesCsvPath: String
+    lateinit var chaseExpensesCsvPath: String
     lateinit var expectedExpensesCsvPath: String
     lateinit var expectedExpensesPatternsCsvPath: String
     lateinit var categoryPatternsCsvPath: String
     lateinit var amExCategoriesCsvPath: String
     lateinit var capitalOneCategoriesCsvPath: String
+    lateinit var chaseCategoriesCsvPath: String
 
     @BeforeEach
     fun setUp() {
@@ -36,11 +39,13 @@ class ImportTaskComponentTest {
         wellsFargoExpensesCsvPath = this::class.java.getResource("/wellsfargo_expenses.csv")!!.path
         amExExpensesCsvPath = this::class.java.getResource("/amex_expenses.csv")!!.path
         capitalOneExpensesCsvPath = this::class.java.getResource("/capitalone_expenses.csv")!!.path
+        chaseExpensesCsvPath = this::class.java.getResource("/chase_expenses.csv")!!.path
         expectedExpensesCsvPath = this::class.java.getResource("/expected_expenses.csv")!!.path
         expectedExpensesPatternsCsvPath = this::class.java.getResource("/expected_expenses_description_patterns.csv")!!.path
         categoryPatternsCsvPath = this::class.java.getResource("/category_description_patterns.csv")!!.path
         amExCategoriesCsvPath = this::class.java.getResource("/amex_categories.csv")!!.path
         capitalOneCategoriesCsvPath = this::class.java.getResource("/capitalone_categories.csv")!!.path
+        chaseCategoriesCsvPath = this::class.java.getResource("/chase_categories.csv")!!.path
     }
 
     @Test
@@ -93,12 +98,19 @@ class ImportTaskComponentTest {
                     retrievalDate = LocalDate.now(),
                     reportType = ExpenseReportType.CapitalOne,
                 ),
+                ExpenseReportInput(
+                    path = chaseExpensesCsvPath,
+                    source = "Holly's Chase Slate",
+                    retrievalDate = LocalDate.now(),
+                    reportType = ExpenseReportType.Chase,
+                ),
             ),
             expectedExpenses = ExpectedExpensesInput(expectedExpensesCsvPath, DescriptionPatternExpectedExpensesInput(expectedExpensesPatternsCsvPath)),
             categories = CategoriesInput(
                 descriptionPatterns = DescriptionPatternCategoryInput(categoryPatternsCsvPath),
                 amExCategories = AmExCategoryInput(amExCategoriesCsvPath),
                 capitalOneCategories = CapitalOneCategoryInput(capitalOneCategoriesCsvPath),
+                chaseCategories = ChaseCategoryInput(chaseCategoriesCsvPath),
             )
         )
 
@@ -129,7 +141,7 @@ class ImportTaskComponentTest {
         assertEquals("Joint Wells Fargo", matchedExpenses[3].instrument?.name)
         assertEquals(Category("Utilities", "Miscellaneous"), matchedExpenses[3].category)
 
-        assertEquals(12, result.categorizedExpenses.size)
+        assertEquals(14, result.categorizedExpenses.size)
         assertTrue {
             result.categorizedExpenses.any {
                 it.category == Category("Financial_Services", "Fines & Fees")
@@ -205,5 +217,18 @@ class ImportTaskComponentTest {
                     && it.instrument?.name == "Holly's Capital One Quicksilver"
             }
         }
+        assertTrue {
+            result.categorizedExpenses.any {
+                it.category == Category("Utilities", "Miscellaneous")
+                    && it.instrument?.name == "Holly's Chase Slate"
+            }
+        }
+        assertTrue {
+            result.categorizedExpenses.any {
+                it.category == Category("Entertainment", "Miscellaneous")
+                    && it.instrument?.name == "Holly's Chase Slate"
+            }
+        }
+        // Note that chase_expenses.csv does not contain any unmatched transactions, so there is no "Entertainment"/"Miscellaneous" for Holly's Chase Slate
     }
 }
