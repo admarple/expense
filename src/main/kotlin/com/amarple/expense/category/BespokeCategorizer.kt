@@ -4,22 +4,20 @@ import com.amarple.expense.model.internal.Category
 import com.amarple.expense.model.internal.Transaction
 
 /**
- * This is the "top-level" categorizer for transactions. This class decides the order in which to try [[TransactionCategorizer]]s,
+ * This is the "top-level" categorizer for transactions. This class decides the order in which to try [TransactionCategorizer]s,
  * which to use when they conflict, etc.
  *
  * TODO: decide on a better name for this class
  */
 class BespokeCategorizer(
-    private val discoverCategoryCategorizer: DiscoverCategoryCategorizer,
-    private val amExCategoryCategorizer: AmExCategoryCategorizer,
+    private val instrumentSpecificCategoryCategorizers: List<TransactionCategorizer>,
     private val descriptionPatternCategorizer: DescriptionPatternCategorizer,
     private val defaultCategorizer: StaticCategorizer,
 ): TransactionCategorizer {
     override fun <T : Transaction<*>> categorize(transaction: T): Category? {
         return listOf(
             descriptionPatternCategorizer,
-            discoverCategoryCategorizer,
-            amExCategoryCategorizer,
+            *instrumentSpecificCategoryCategorizers.toTypedArray(),
             defaultCategorizer
         ).firstNotNullOf { it.categorize(transaction) }
     }

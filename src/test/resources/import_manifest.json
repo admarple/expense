@@ -23,6 +23,12 @@
       "source": "Alex's AmEx",
       "retrievalDate": "2026-01-06",
       "reportType": "AmericanExpress"
+    },
+    {
+      "path": "capitalone_expenses.csv",
+      "source": "Holly's Capital One Quicksilver",
+      "retrievalDate": "2026-01-06",
+      "reportType": "CapitalOne"
     }
   ],
   "expectedExpenses": {
@@ -37,6 +43,9 @@
     },
     "amExCategories": {
       "path": "amex_categories.csv"
+    },
+    "capitalOneCategories": {
+      "path": "capitalone_categories.csv"
     }
   }
 }

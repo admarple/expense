@@ -1,6 +1,7 @@
 package com.amarple.expense.cli
 
 import com.amarple.expense.model.AmExCategoryInput
+import com.amarple.expense.model.CapitalOneCategoryInput
 import com.amarple.expense.model.ImportInput
 import com.amarple.expense.model.ExpectedExpensesInput
 import com.amarple.expense.model.DescriptionPatternExpectedExpensesInput
@@ -21,10 +22,12 @@ class ImportTaskComponentTest {
     lateinit var boaExpensesCsvPath: String
     lateinit var wellsFargoExpensesCsvPath: String
     lateinit var amExExpensesCsvPath: String
+    lateinit var capitalOneExpensesCsvPath: String
     lateinit var expectedExpensesCsvPath: String
     lateinit var expectedExpensesPatternsCsvPath: String
     lateinit var categoryPatternsCsvPath: String
     lateinit var amExCategoriesCsvPath: String
+    lateinit var capitalOneCategoriesCsvPath: String
 
     @BeforeEach
     fun setUp() {
@@ -32,10 +35,12 @@ class ImportTaskComponentTest {
         boaExpensesCsvPath = this::class.java.getResource("/boa_expenses.csv")!!.path
         wellsFargoExpensesCsvPath = this::class.java.getResource("/wellsfargo_expenses.csv")!!.path
         amExExpensesCsvPath = this::class.java.getResource("/amex_expenses.csv")!!.path
+        capitalOneExpensesCsvPath = this::class.java.getResource("/capitalone_expenses.csv")!!.path
         expectedExpensesCsvPath = this::class.java.getResource("/expected_expenses.csv")!!.path
         expectedExpensesPatternsCsvPath = this::class.java.getResource("/expected_expenses_description_patterns.csv")!!.path
         categoryPatternsCsvPath = this::class.java.getResource("/category_description_patterns.csv")!!.path
         amExCategoriesCsvPath = this::class.java.getResource("/amex_categories.csv")!!.path
+        capitalOneCategoriesCsvPath = this::class.java.getResource("/capitalone_categories.csv")!!.path
     }
 
     @Test
@@ -82,11 +87,18 @@ class ImportTaskComponentTest {
                     retrievalDate = LocalDate.now(),
                     reportType = ExpenseReportType.AmericanExpress,
                 ),
+                ExpenseReportInput(
+                    path = capitalOneExpensesCsvPath,
+                    source = "Holly's Capital One Quicksilver",
+                    retrievalDate = LocalDate.now(),
+                    reportType = ExpenseReportType.CapitalOne,
+                ),
             ),
             expectedExpenses = ExpectedExpensesInput(expectedExpensesCsvPath, DescriptionPatternExpectedExpensesInput(expectedExpensesPatternsCsvPath)),
             categories = CategoriesInput(
                 descriptionPatterns = DescriptionPatternCategoryInput(categoryPatternsCsvPath),
-                amExCategories = AmExCategoryInput(amExCategoriesCsvPath)
+                amExCategories = AmExCategoryInput(amExCategoriesCsvPath),
+                capitalOneCategories = CapitalOneCategoryInput(capitalOneCategoriesCsvPath),
             )
         )
 
@@ -117,14 +129,42 @@ class ImportTaskComponentTest {
         assertEquals("Joint Wells Fargo", matchedExpenses[3].instrument?.name)
         assertEquals(Category("Utilities", "Miscellaneous"), matchedExpenses[3].category)
 
-        assertEquals(9, result.categorizedExpenses.size)
-        assertTrue { result.categorizedExpenses.any { it.category == Category("Financial_Services", "Fines & Fees") } }
-        assertTrue { result.categorizedExpenses.any { it.category == Category("Transportation", "Public Transit") } }
-        assertTrue { result.categorizedExpenses.any { it.category == Category("Grocery", "Miscellaneous") } }
-        assertTrue { result.categorizedExpenses.any { it.category == Category("Gifts", "Friends & Family") } }
+        assertEquals(12, result.categorizedExpenses.size)
+        assertTrue {
+            result.categorizedExpenses.any {
+                it.category == Category("Financial_Services", "Fines & Fees")
+                    && it.instrument?.name == "Alex's Discover"
+            }
+        }
+        assertTrue {
+            result.categorizedExpenses.any {
+                it.category == Category("Transportation", "Public Transit")
+                    && it.instrument?.name == "Alex's Discover"
+            }
+        }
+        assertTrue {
+            result.categorizedExpenses.any {
+                it.category == Category("Grocery", "Miscellaneous")
+                    && it.instrument?.name == "Alex's Discover"
+            }
+        }
+        // Note that discover_expenses.csv does not contain any unmatched transactions, so there is no "Entertainment"/"Miscellaneous" for Alex's Discover
+        assertTrue {
+            result.categorizedExpenses.any {
+                it.category == Category("Gifts", "Friends & Family")
+                    && it.instrument?.name == "Alex's Bank of America"
+            }
+        }
         assertTrue {
             result.categorizedExpenses.any {
                 it.category == Category("Entertainment", "Restaurants & Bars")
+                    && it.instrument?.name == "Alex's Bank of America"
+            }
+        }
+        // Transactions not categorized will default to "Entertainment"/"Miscellaneous", per BespokeCategorizer
+        assertTrue {
+            result.categorizedExpenses.any {
+                it.category == Category("Entertainment", "Miscellaneous")
                     && it.instrument?.name == "Alex's Bank of America"
             }
         }
@@ -140,20 +180,30 @@ class ImportTaskComponentTest {
                     && it.instrument?.name == "Alex's AmEx"
             }
         }
-        // Transactions not categorized will default to "Entertainment"/"Miscellaneous", per BespokeCategorizer
-        // Note that discover_expenses.csv and amex_expenses.csv do not contain any unmatched transactions, so there is no "Entertainment"/"Miscellaneous" for the Alex's Discover or Alex's AmEx
-        assertTrue {
-            result.categorizedExpenses.any {
-                it.category == Category("Entertainment", "Miscellaneous")
-                    && it.instrument?.name == "Alex's Bank of America"
-            }
-        }
+        // Note that amex_expenses.csv does not contain any unmatched transactions, so there is no "Entertainment"/"Miscellaneous" for Alex's AmEx
         assertTrue {
             result.categorizedExpenses.any {
                 it.category == Category("Entertainment", "Miscellaneous")
                     && it.instrument?.name == "Joint Wells Fargo"
             }
         }
-
+        assertTrue {
+            result.categorizedExpenses.any {
+                it.category == Category("Financial_Services", "Fines & Fees")
+                    && it.instrument?.name == "Holly's Capital One Quicksilver"
+            }
+        }
+        assertTrue {
+            result.categorizedExpenses.any {
+                it.category == Category("Financial_Services", "Payment & Credits")
+                    && it.instrument?.name == "Holly's Capital One Quicksilver"
+            }
+        }
+        assertTrue {
+            result.categorizedExpenses.any {
+                it.category == Category("Entertainment", "Miscellaneous")
+                    && it.instrument?.name == "Holly's Capital One Quicksilver"
+            }
+        }
     }
 }
