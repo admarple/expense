@@ -213,10 +213,11 @@ class ImportTaskComponentTest {
         }
         assertTrue {
             result.categorizedExpenses.any {
-                it.category == Category("Entertainment", "Miscellaneous")
+                it.category == Category("Health", "Habits, e.g. Gym")
                     && it.instrument?.name == "Holly's Capital One Quicksilver"
             }
         }
+        // Note that capitalone_expenses.csv does not contain any unmatched transactions, so there is no "Entertainment"/"Miscellaneous" for Holly's Capital One Quicksilver
         assertTrue {
             result.categorizedExpenses.any {
                 it.category == Category("Utilities", "Miscellaneous")

@@ -12,7 +12,7 @@ class DescriptionPatternCategoryReaderTest {
         val csvPath = this::class.java.getResource("/category_description_patterns.csv")!!.path
         val result = reader.read(DescriptionPatternCategoryInput(csvPath))
 
-        assertEquals(3, result.size)
+        assertEquals(6, result.size)
         assertEquals("^SEPTA.*CARD", result[0].pattern)
         assertEquals("Transportation", result[0].category.category)
         assertEquals("Public Transit", result[0].category.subcategory)

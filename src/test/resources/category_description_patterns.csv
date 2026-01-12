@@ -2,3 +2,6 @@
 "^SEPTA.*CARD","Transportation","Public Transit"
 "^Rally House Wayne PA","Gifts","Friends & Family"
 "^SQ \*","Entertainment","Restaurants & Bars"
+"^HEALTH INS PREMIUM PMT","Health","Physical Healthcare"
+"^CAPITAL ONE .* PYMT","Financial_Services","Payment & Credits"
+"^CLASSPASS\*","Health","Habits, e.g. Gym"
