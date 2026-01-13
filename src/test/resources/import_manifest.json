@@ -1,60 +1,63 @@
 {
   "reports": [
     {
-      "path": "boa_expenses.csv",
+      "path": "src/test/resources/boa_expenses.csv",
       "source": "Alex's Bank of America",
       "retrievalDate": "2026-01-06",
       "reportType": "BankOfAmerica"
     },
     {
-      "path": "discover_expenses.csv",
+      "path": "src/test/resources/discover_expenses.csv",
       "source": "Alex's Discover",
       "retrievalDate": "2026-01-06",
       "reportType": "Discover"
     },
     {
-      "path": "wellsfargo_expenses.csv",
+      "path": "src/test/resources/wellsfargo_expenses.csv",
       "source": "Joint Wells Fargo",
       "retrievalDate": "2026-01-06",
       "reportType": "WellsFargo"
     },
     {
-      "path": "amex_expenses.csv",
+      "path": "src/test/resources/amex_expenses.csv",
       "source": "Alex's AmEx",
       "retrievalDate": "2026-01-06",
       "reportType": "AmericanExpress"
     },
     {
-      "path": "capitalone_expenses.csv",
+      "path": "src/test/resources/capitalone_expenses.csv",
       "source": "Holly's Capital One Quicksilver",
       "retrievalDate": "2026-01-06",
       "reportType": "CapitalOne"
     },
     {
-      "path": "chase_expenses.csv",
+      "path": "src/test/resources/chase_expenses.csv",
       "source": "Holly's Chase Slate",
       "retrievalDate": "2026-01-06",
       "reportType": "Chase"
     }
   ],
   "expectedExpenses": {
-    "path": "expected_expenses.csv",
+    "path": "src/test/resources/expected_expenses.csv",
     "descriptionPatterns": {
-      "path": "expected_expenses_description_patterns.csv"
+      "path": "src/test/resources/expected_expenses_description_patterns.csv"
     }
   },
   "categories": {
     "descriptionPatterns": {
-      "path": "category_description_patterns.csv"
+      "path": "src/test/resources/category_description_patterns.csv"
     },
     "amExCategories": {
-      "path": "amex_categories.csv"
+      "path": "src/test/resources/amex_categories.csv"
     },
     "capitalOneCategories": {
-      "path": "capitalone_categories.csv"
+      "path": "src/test/resources/capitalone_categories.csv"
     },
     "chaseCategories": {
-      "path": "chase_categories.csv"
+      "path": "src/test/resources/chase_categories.csv"
+    },
+    "discoverCategories": {
+      "path": "src/test/resources/discover_categories.csv"
     }
   }
 }
