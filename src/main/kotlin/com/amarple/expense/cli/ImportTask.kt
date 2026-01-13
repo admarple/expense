@@ -22,6 +22,7 @@ import com.amarple.expense.read.config.CapitalOneCategoryReader
 import com.amarple.expense.read.config.ChaseCategoryReader
 import com.amarple.expense.read.config.DescriptionPatternCategoryReader
 import com.amarple.expense.read.config.DescriptionPatternExpectedExpenseReader
+import com.amarple.expense.read.config.DiscoverCategoryReader
 import com.amarple.expense.read.expected.ExpectedExpenseReader
 import com.amarple.expense.read.expected.UberSheetExpectedExpenseReader
 import com.amarple.expense.read.report.AmExExpenseReportReader
@@ -41,6 +42,7 @@ class ImportTask(
     private val amExCategoryCategoryReader: AmExCategoryReader = AmExCategoryReader(),
     private val capitalOneCategoryReader: CapitalOneCategoryReader = CapitalOneCategoryReader(),
     private val chaseCategoryReader: ChaseCategoryReader = ChaseCategoryReader(),
+    private val discoverCategoryReader: DiscoverCategoryReader = DiscoverCategoryReader(),
     private val patternCategoryReader: DescriptionPatternCategoryReader = DescriptionPatternCategoryReader(),
     private val patternExpectedExpenseReader: DescriptionPatternExpectedExpenseReader = DescriptionPatternExpectedExpenseReader(),
     private val expenseReportReaderSelector: ExpenseReportReaderSelector = ExpenseReportReaderSelector(
@@ -65,13 +67,16 @@ class ImportTask(
         // 2. Read the configuration for categories, which will be used when categorizing expenses
         val categoryPatterns = patternCategoryReader.read(importInput.categories.descriptionPatterns)
         val amExCategories = importInput.categories.amExCategories
-            ?.let { amExCategoryCategoryReader.read(importInput.categories.amExCategories) }
+            ?.let { amExCategoryCategoryReader.read(it) }
             ?: emptyList()
         val capitalOneCategories = importInput.categories.capitalOneCategories
-            ?.let { capitalOneCategoryReader.read(importInput.categories.capitalOneCategories) }
+            ?.let { capitalOneCategoryReader.read(it) }
             ?: emptyList()
         val chaseCategories = importInput.categories.chaseCategories
-            ?.let { chaseCategoryReader.read(importInput.categories.chaseCategories) }
+            ?.let { chaseCategoryReader.read(it) }
+            ?: emptyList()
+        val discoverCategories = importInput.categories.discoverCategories
+            ?.let { discoverCategoryReader.read(it) }
             ?: emptyList()
 
         // 3. Read the reports using the classes in com.amarple.expense.read.report
@@ -93,7 +98,7 @@ class ImportTask(
         // 5. Try to categorize transactions from the reports
         val categorizer = BespokeCategorizer(
             listOf(
-                DiscoverCategoryCategorizer(),
+                DiscoverCategoryCategorizer(discoverCategories),
                 AmExCategoryCategorizer(amExCategories),
                 CapitalOneCategoryCategorizer(capitalOneCategories),
                 ChaseCategoryCategorizer(chaseCategories),
@@ -101,7 +106,6 @@ class ImportTask(
             DescriptionPatternCategorizer(categoryPatterns),
             StaticCategorizer(Category("Entertainment", "Miscellaneous"))
         )
-        // 5.a. TODO: configure the logic for categorizing transactions from each report, e.g. DiscoverCategoryCategorizer can only be used for Discover reports
         // 5.b. TODO: find a way to categorize auto-payments so that we can exclude them
         // 5.c. TODO: find a way to categorize incoming deposits and outgoing transfers so that we can return them separately
 

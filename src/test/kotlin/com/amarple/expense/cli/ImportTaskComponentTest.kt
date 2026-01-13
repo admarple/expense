@@ -8,6 +8,7 @@ import com.amarple.expense.model.ExpectedExpensesInput
 import com.amarple.expense.model.DescriptionPatternExpectedExpensesInput
 import com.amarple.expense.model.CategoriesInput
 import com.amarple.expense.model.DescriptionPatternCategoryInput
+import com.amarple.expense.model.DiscoverCategoryInput
 import com.amarple.expense.model.ExpenseReportInput
 import com.amarple.expense.model.internal.Category
 import com.amarple.expense.read.report.ExpenseReportType
@@ -31,6 +32,7 @@ class ImportTaskComponentTest {
     lateinit var amExCategoriesCsvPath: String
     lateinit var capitalOneCategoriesCsvPath: String
     lateinit var chaseCategoriesCsvPath: String
+    lateinit var discoverCategoriesCsvPath: String
 
     @BeforeEach
     fun setUp() {
@@ -46,6 +48,7 @@ class ImportTaskComponentTest {
         amExCategoriesCsvPath = this::class.java.getResource("/amex_categories.csv")!!.path
         capitalOneCategoriesCsvPath = this::class.java.getResource("/capitalone_categories.csv")!!.path
         chaseCategoriesCsvPath = this::class.java.getResource("/chase_categories.csv")!!.path
+        discoverCategoriesCsvPath = this::class.java.getResource("/discover_categories.csv")!!.path
     }
 
     @Test
@@ -111,6 +114,7 @@ class ImportTaskComponentTest {
                 amExCategories = AmExCategoryInput(amExCategoriesCsvPath),
                 capitalOneCategories = CapitalOneCategoryInput(capitalOneCategoriesCsvPath),
                 chaseCategories = ChaseCategoryInput(chaseCategoriesCsvPath),
+                discoverCategories = DiscoverCategoryInput(discoverCategoriesCsvPath),
             )
         )
 
@@ -207,7 +211,7 @@ class ImportTaskComponentTest {
         }
         assertTrue {
             result.categorizedExpenses.any {
-                it.category == Category("Financial_Services", "Payment & Credits")
+                it.category == Category("Financial_Services", "Payments")
                     && it.instrument?.name == "Holly's Capital One Quicksilver"
             }
         }

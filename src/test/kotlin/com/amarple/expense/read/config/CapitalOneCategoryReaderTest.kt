@@ -19,6 +19,6 @@ class CapitalOneCategoryReaderTest {
 
         assertEquals("Payment/Credit", result.last().capitalOneCategory)
         assertEquals("Financial_Services", result.last().category.category)
-        assertEquals("Payment & Credits", result.last().category.subcategory)
+        assertEquals("Payments", result.last().category.subcategory)
     }
 }

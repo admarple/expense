@@ -48,39 +48,19 @@ data class DiscoverExpenseLine(
     @JsonProperty("Amount")
     val amount: Double,
     @JsonProperty("Category")
-    val discoverCategoryName: String? = null,
+    val discoverCategory: String? = null,
 )
-
-enum class DiscoverCategory(val displayName: String?) {
-    UNRECOGNIZED(null),
-    MERCHANDISE("Merchandise"),
-    SERVICES("Services"),
-    PAYMENTS_AND_CREDITS("Payments and credits"),
-    TRAVEL_AND_ENTERTAINMENT("Travel/ Entertainment"),
-    RESTAURANTS("Restaurants"),
-    SUPERMARKETS("Supermarkets"),
-    GOVERNMENT_SERVICES("Government Services"),
-    AWARDS_AND_REBATE_CREDITS("Awards and Rebate Credits");
-
-    companion object {
-        fun lookupByDisplayName(displayName: String?): DiscoverCategory {
-            return DiscoverCategory.entries.find { it.displayName == displayName } ?: DiscoverCategory.UNRECOGNIZED
-        }
-    }
-}
 
 data class DiscoverTransaction(
     val transactionDate: LocalDate,
     val postDate: LocalDate,
     override val amount: Double,
     override val description: String,
-    val discoverCategoryName: String? = null,
+    val discoverCategory: String? = null,
     override val category: Category? = null,
     override val instrument: PaymentInstrument? = null,
 ): Transaction<DiscoverTransaction> {
     override val date: LocalDate = transactionDate
-
-    val discoverCategory: DiscoverCategory = DiscoverCategory.lookupByDisplayName(discoverCategoryName)
 
     constructor(discoverExpenseLine: DiscoverExpenseLine, source: String? = null): this(
         transactionDate = discoverExpenseLine.transactionDate,
@@ -88,7 +68,7 @@ data class DiscoverTransaction(
         // Discover's CSV uses positive amounts for debts, so we must negate the amount
         amount = discoverExpenseLine.amount * -1,
         description = discoverExpenseLine.description ?: "",
-        discoverCategoryName = discoverExpenseLine.discoverCategoryName,
+        discoverCategory = discoverExpenseLine.discoverCategory,
         instrument = source?.let { PaymentInstrument(it) },
     )
 

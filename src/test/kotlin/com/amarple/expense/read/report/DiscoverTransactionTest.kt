@@ -14,7 +14,7 @@ class DiscoverTransactionTest {
             localDate = LocalDate.of(2023,1,2),
             description = "AMAZON",
             amount = 10.0,
-            discoverCategoryName = "Merchandise"
+            discoverCategory = "Merchandise"
         )
 
         val transaction = DiscoverTransaction(line, "MyCard")
@@ -24,6 +24,6 @@ class DiscoverTransactionTest {
         assertEquals(-10.0, transaction.amount)
         assertEquals("AMAZON", transaction.description)
         assertEquals(PaymentInstrument("MyCard"), transaction.instrument)
-        assertEquals(DiscoverCategory.MERCHANDISE, transaction.discoverCategory)
+        assertEquals("Merchandise", transaction.discoverCategory)
     }
 }
