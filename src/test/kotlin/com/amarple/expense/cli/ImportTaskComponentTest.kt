@@ -145,7 +145,7 @@ class ImportTaskComponentTest {
         assertEquals("Joint Wells Fargo", matchedExpenses[3].instrument?.name)
         assertEquals(Category("Utilities", "Miscellaneous"), matchedExpenses[3].category)
 
-        assertEquals(14, result.categorizedExpenses.size)
+        assertEquals(13, result.categorizedExpenses.size)
         assertTrue {
             result.categorizedExpenses.any {
                 it.category == Category("Financial_Services", "Fines & Fees")
@@ -206,12 +206,6 @@ class ImportTaskComponentTest {
         assertTrue {
             result.categorizedExpenses.any {
                 it.category == Category("Financial_Services", "Fines & Fees")
-                    && it.instrument?.name == "Holly's Capital One Quicksilver"
-            }
-        }
-        assertTrue {
-            result.categorizedExpenses.any {
-                it.category == Category("Financial_Services", "Payments")
                     && it.instrument?.name == "Holly's Capital One Quicksilver"
             }
         }

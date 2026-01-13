@@ -16,6 +16,7 @@ import com.amarple.expense.model.internal.BasicTransaction
 import com.amarple.expense.model.internal.Category
 import com.amarple.expense.model.internal.ExpectedExpense
 import com.amarple.expense.model.internal.ExpenseReport
+import com.amarple.expense.model.internal.PAYMENTS
 import com.amarple.expense.model.internal.Transaction
 import com.amarple.expense.read.config.AmExCategoryReader
 import com.amarple.expense.read.config.CapitalOneCategoryReader
@@ -106,7 +107,6 @@ class ImportTask(
             DescriptionPatternCategorizer(categoryPatterns),
             StaticCategorizer(Category("Entertainment", "Miscellaneous"))
         )
-        // 5.b. TODO: find a way to categorize auto-payments so that we can exclude them
         // 5.c. TODO: find a way to categorize incoming deposits and outgoing transfers so that we can return them separately
 
         // 6. Calculate new AggregatedTransactions
@@ -120,8 +120,10 @@ class ImportTask(
                 transaction
             }
         }
-        // 6.b. ... and group transactions by category and instrument
-        val aggregatedTransactions = aggregator.aggregate(categorizedTransactions)
+        // 6.b. TODO: find a way to categorize auto-payments so that we can exclude them
+        val transactionsWithoutPayments = categorizedTransactions.filter { it.category != PAYMENTS }
+        // 6.c. ... and group transactions by category and instrument
+        val aggregatedTransactions = aggregator.aggregate(transactionsWithoutPayments)
 
         // 7. Build the response, including ...
         // 7.a. ... a list of transactions for expected expenses, in the same order as config, with null to designate expenses where no transaction was matched

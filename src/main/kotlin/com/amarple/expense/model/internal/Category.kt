@@ -4,3 +4,5 @@ data class Category(
     val category: String,
     val subcategory: String
 )
+
+val PAYMENTS = Category("Financial_Services", "Payments")
