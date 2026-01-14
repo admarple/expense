@@ -35,7 +35,7 @@ class BoaExpenseReportReader : ExpenseReportReader {
 
 data class BoaExpenseLine(
     @JsonProperty("Posted Date")
-    @JsonFormat(pattern = "M/d/uu")
+    @JsonFormat(pattern = "MM/dd/yyyy")
     val date: LocalDate,
     @JsonProperty("Reference Number")
     val referenceNumber: String? = null,

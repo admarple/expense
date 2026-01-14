@@ -36,7 +36,7 @@ class WellsFargoExpenseReportReader : ExpenseReportReader {
 @JsonPropertyOrder("Date", "Amount", "Huh? Always Star", "Huh? Always Blank", "Description")
 data class WellsFargoExpenseLine(
     @JsonProperty("Date")
-    @JsonFormat(pattern = "M/d/uu")
+    @JsonFormat(pattern = "MM/dd/yyyy")
     val date: LocalDate,
     @JsonProperty("Amount")
     val amount: Double,

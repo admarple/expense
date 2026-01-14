@@ -37,10 +37,10 @@ class ChaseExpenseReportReader : ExpenseReportReader {
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class ChaseExpenseLine(
     @JsonProperty("Transaction Date")
-    @JsonFormat(pattern = "M/d/uu")
+    @JsonFormat(pattern = "MM/dd/yyyy")
     val transactionDate: LocalDate,
     @JsonProperty("Post Date")
-    @JsonFormat(pattern = "M/d/uu")
+    @JsonFormat(pattern = "MM/dd/yyyy")
     val postedDate: LocalDate,
     @JsonProperty("Description")
     val description: String? = null,

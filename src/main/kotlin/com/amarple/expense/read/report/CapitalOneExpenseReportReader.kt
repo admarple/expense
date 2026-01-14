@@ -38,10 +38,10 @@ class CapitalOneExpenseReportReader : ExpenseReportReader {
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class CapitalOneExpenseLine(
     @JsonProperty("Transaction Date")
-    @JsonFormat(pattern = "M/d/uu")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     val transactionDate: LocalDate,
     @JsonProperty("Posted Date")
-    @JsonFormat(pattern = "M/d/uu")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     val postedDate: LocalDate,
     @JsonProperty("Description")
     val description: String? = null,

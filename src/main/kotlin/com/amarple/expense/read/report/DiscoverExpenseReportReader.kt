@@ -35,10 +35,10 @@ class DiscoverExpenseReportReader : ExpenseReportReader {
 
 data class DiscoverExpenseLine(
     @JsonProperty("Trans. Date")
-    @JsonFormat(pattern = "M/d/uu")
+    @JsonFormat(pattern = "MM/dd/yyyy")
     val transactionDate: LocalDate,
     @JsonProperty("Post Date")
-    @JsonFormat(pattern = "M/d/uu")
+    @JsonFormat(pattern = "MM/dd/yyyy")
     val localDate: LocalDate,
     @JsonProperty("Description")
     val description: String? = null,
