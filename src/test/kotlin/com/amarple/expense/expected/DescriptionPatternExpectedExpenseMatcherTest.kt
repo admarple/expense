@@ -13,7 +13,7 @@ class DescriptionPatternExpectedExpenseMatcherTest {
     fun `should match transaction based on description pattern and expense name`() {
         val patterns = listOf(
             DescriptionPatternExpectedExpense("RENT$", "Rent"),
-            DescriptionPatternExpectedExpense("^NETFLIX", "Subscriptions")
+            DescriptionPatternExpectedExpense("^NETFLIX", "Subscriptions"),
         )
 
         val matcher = DescriptionPatternExpectedExpenseMatcher(patterns)
@@ -30,5 +30,24 @@ class DescriptionPatternExpectedExpenseMatcherTest {
 
         assertFalse(matcher.isMatch(expectedRent, tNetflix))
         assertFalse(matcher.isMatch(expectedRent, tOther))
+    }
+
+    @Test
+    fun `should match transaction based on description pattern and expected amount`() {
+        val patterns = listOf(
+            DescriptionPatternExpectedExpense("^APPLE\\.COM/BILL","Apple Cloud Storage", true),
+        )
+
+        val matcher = DescriptionPatternExpectedExpenseMatcher(patterns)
+
+        val tAppleCloud = BasicTransaction(LocalDate.now(), -10.0, "APPLE.COM/BILL", null, null)
+        val tAppleOther = BasicTransaction(LocalDate.now(), -50.0, "APPLE.COM/BILL", null, null)
+        val tOther = BasicTransaction(LocalDate.now(), -10.0, "OTHER", null, null)
+
+        val expectedAppleCloud = ExpectedExpense("Apple Cloud Storage", tAppleCloud)
+
+        assertTrue(matcher.isMatch(expectedAppleCloud, tAppleCloud))
+        assertFalse(matcher.isMatch(expectedAppleCloud, tAppleOther))
+        assertFalse(matcher.isMatch(expectedAppleCloud, tOther))
     }
 }

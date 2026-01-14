@@ -6,3 +6,4 @@ data class Category(
 )
 
 val PAYMENTS = Category("Financial_Services", "Payments")
+val TRANSFERS = Category("Financial_Services", "Transfers")

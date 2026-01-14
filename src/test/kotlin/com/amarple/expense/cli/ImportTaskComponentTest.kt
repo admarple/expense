@@ -63,7 +63,7 @@ class ImportTaskComponentTest {
         val result = task.execute(input)
 
         assertNotNull(result)
-        assertEquals(6, result.expectedExpenses.size)
+        assertEquals(7, result.expectedExpenses.size)
     }
 
     @Test
@@ -121,9 +121,9 @@ class ImportTaskComponentTest {
         val result = task.execute(input)
 
         assertNotNull(result)
-        assertEquals(6, result.expectedExpenses.size)
+        assertEquals(7, result.expectedExpenses.size)
         val matchedExpenses = result.expectedExpenses.filterNotNull()
-        assertEquals(4, matchedExpenses.size)
+        assertEquals(5, matchedExpenses.size)
 
         assertEquals("WhiteTail (Waste)", matchedExpenses[0].description)
         assertEquals(-13.0, result.expectedExpenses.filterNotNull()[0].amount)
@@ -144,6 +144,11 @@ class ImportTaskComponentTest {
         assertEquals(-39.99, matchedExpenses[3].amount)
         assertEquals("Joint Wells Fargo", matchedExpenses[3].instrument?.name)
         assertEquals(Category("Utilities", "Miscellaneous"), matchedExpenses[3].category)
+
+        assertEquals("Apple Cloud Storage", matchedExpenses[4].description)
+        assertEquals(-2.99, matchedExpenses[4].amount)
+        assertEquals("Alex's AmEx", matchedExpenses[4].instrument?.name)
+        assertEquals(Category("Utilities", "Miscellaneous"), matchedExpenses[4].category)
 
         assertEquals(13, result.categorizedExpenses.size)
         assertTrue {

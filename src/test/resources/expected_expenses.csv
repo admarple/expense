@@ -1,7 +1,8 @@
 Category,Subcategory,Payment Instrument,Name,Amount
-Entertainment,Miscellaneous,Alex's Bank of America,Alex's Bank of America (less fixed),123.45
-Entertainment,Miscellaneous,Alex's Discover,Alex's Discover (less fixed),234.56
-Utilities,Miscellaneous,Alex's Discover,WhiteTail (Waste),13
-Utilities,Miscellaneous,Alex's Discover,GasTec (Propane),12.34
-Health,Physical Healthcare,Joint Wells Fargo,COBRA,345.67
-Utilities,Miscellaneous,Joint Wells Fargo,Verizon (Internet),39.99
+Entertainment,Miscellaneous,Alex's Bank of America,Alex's Bank of America (less fixed),-123.45
+Entertainment,Miscellaneous,Alex's Discover,Alex's Discover (less fixed),-234.56
+Utilities,Miscellaneous,Alex's Discover,WhiteTail (Waste),-13
+Utilities,Miscellaneous,Alex's Discover,GasTec (Propane),-12.34
+Health,Physical Healthcare,Joint Wells Fargo,COBRA,-345.67
+Utilities,Miscellaneous,Joint Wells Fargo,Verizon (Internet),-39.99
+Utilities,Miscellaneous,Alex's AmEx,Apple Cloud Storage,-2.99

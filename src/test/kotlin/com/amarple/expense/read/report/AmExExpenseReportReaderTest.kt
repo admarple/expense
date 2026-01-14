@@ -12,7 +12,7 @@ class AmExExpenseReportReaderTest {
         val reader = AmExExpenseReportReader()
         val result = reader.read(ExpenseReportInput(csvPath, "Alex's AmEx", reportType = ExpenseReportType.AmericanExpress))
 
-        assertEquals(2, result.transactions.size)
+        assertEquals(3, result.transactions.size)
 
         val t1 = result.transactions.first()
         assertEquals(LocalDate.of(2025, 12, 3), t1.date)

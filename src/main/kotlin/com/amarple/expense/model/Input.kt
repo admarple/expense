@@ -3,9 +3,6 @@ package com.amarple.expense.model
 import com.amarple.expense.read.report.ExpenseReportType
 import java.time.LocalDate
 
-/**
- * TODO: change properties to val if it plays nicely with Jackson serializer
- */
 data class ImportInput(
     val reports: List<ExpenseReportInput>,
     val expectedExpenses: ExpectedExpensesInput,

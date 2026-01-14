@@ -17,6 +17,7 @@ import com.amarple.expense.model.internal.Category
 import com.amarple.expense.model.internal.ExpectedExpense
 import com.amarple.expense.model.internal.ExpenseReport
 import com.amarple.expense.model.internal.PAYMENTS
+import com.amarple.expense.model.internal.TRANSFERS
 import com.amarple.expense.model.internal.Transaction
 import com.amarple.expense.read.config.AmExCategoryReader
 import com.amarple.expense.read.config.CapitalOneCategoryReader
@@ -120,10 +121,12 @@ class ImportTask(
                 transaction
             }
         }
-        // 6.b. TODO: find a way to categorize auto-payments so that we can exclude them
-        val transactionsWithoutPayments = categorizedTransactions.filter { it.category != PAYMENTS }
+        // 6.b. From transactions, exclude ...
+        val transactionsToAggregate = categorizedTransactions
+            .filter { it.category != PAYMENTS } // 6.b.1. payments, TODO: add a check that the total of payments across all instruments is 0, i.e. positive credits on cards negates payments from a bank account
+            .filter { it.category != TRANSFERS } // 6.b.2. and incoming deposits TODO: remove this line after adding a better way to filter out incoming deposits
         // 6.c. ... and group transactions by category and instrument
-        val aggregatedTransactions = aggregator.aggregate(transactionsWithoutPayments)
+        val aggregatedTransactions = aggregator.aggregate(transactionsToAggregate)
 
         // 7. Build the response, including ...
         // 7.a. ... a list of transactions for expected expenses, in the same order as config, with null to designate expenses where no transaction was matched

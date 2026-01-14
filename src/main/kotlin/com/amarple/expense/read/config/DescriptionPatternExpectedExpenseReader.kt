@@ -32,6 +32,8 @@ data class DescriptionPatternExpectedExpenseLine(
     val pattern: String,
     @JsonProperty("transactionName")
     val transactionName: String,
+    @JsonProperty("requirePriceMatch")
+    val requirePriceMatch: Boolean = false
 ) {
-    fun toDescriptionPattern() = DescriptionPatternExpectedExpense(pattern, transactionName)
+    fun toDescriptionPattern() = DescriptionPatternExpectedExpense(pattern, transactionName, requirePriceMatch)
 }
