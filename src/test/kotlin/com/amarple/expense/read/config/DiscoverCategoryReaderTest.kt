@@ -12,7 +12,7 @@ class DiscoverCategoryReaderTest {
         val csvPath = this::class.java.getResource("/discover_categories.csv")!!.path
         val result = reader.read(DiscoverCategoryInput(csvPath))
 
-        assertEquals(8, result.size)
+        assertEquals(9, result.size)
         assertEquals("Merchandise", result.first().discoverCategory)
         assertEquals("Shopping", result.first().category.category)
         assertEquals("Miscellaneous", result.first().category.subcategory)

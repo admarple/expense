@@ -12,7 +12,7 @@ class AmExCategoryReaderTest {
         val csvPath = this::class.java.getResource("/amex_categories.csv")!!.path
         val result = reader.read(AmExCategoryInput(csvPath))
 
-        assertEquals(13, result.size)
+        assertEquals(14, result.size)
         assertEquals("Restaurant", result[0].amExCategory)
         assertEquals("Restaurant", result[0].amExSubcategory)
         assertEquals("Entertainment", result[0].category.category)
