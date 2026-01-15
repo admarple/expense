@@ -1,6 +1,7 @@
 package com.amarple.expense.model
 
 import com.amarple.expense.read.report.ExpenseReportType
+import com.fasterxml.jackson.annotation.JsonFormat
 import java.time.LocalDate
 
 data class ImportInput(
@@ -57,6 +58,7 @@ data class DiscoverCategoryInput(
 
 data class AggregationInput(
     val aggregationType: AggregationType = AggregationType.CategoryAndInstrument,
+    val dateRange: DateRange? = null,
 )
 
 enum class AggregationType {
@@ -65,3 +67,10 @@ enum class AggregationType {
     Instrument,
     CategoryAndInstrument,
 }
+
+data class DateRange(
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    val startDate: LocalDate,
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    val endDate: LocalDate,
+)

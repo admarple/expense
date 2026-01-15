@@ -14,6 +14,7 @@ import com.amarple.expense.category.DiscoverCategoryCategorizer
 import com.amarple.expense.category.StaticCategorizer
 import com.amarple.expense.expected.DescriptionPatternExpectedExpenseMatcher
 import com.amarple.expense.model.AggregationType
+import com.amarple.expense.model.DateRange
 import com.amarple.expense.model.ImportInput
 import com.amarple.expense.model.ImportOutput
 import com.amarple.expense.model.internal.BasicTransaction
@@ -40,6 +41,7 @@ import com.amarple.expense.read.report.DiscoverExpenseReportReader
 import com.amarple.expense.read.report.ExpenseReportReaderSelector
 import com.amarple.expense.read.report.ExpenseReportType
 import com.amarple.expense.read.report.WellsFargoExpenseReportReader
+import java.time.LocalDate
 import java.time.YearMonth
 import kotlin.collections.firstOrNull
 import kotlin.collections.forEachIndexed
@@ -87,7 +89,13 @@ class ImportTask(
 
         // 3. Read the reports using the classes in com.amarple.expense.read.report
         val expenseReports = readExpenseReports(importInput)
-        val allTransactions: List<Transaction<*>> = expenseReports.flatMap { it.transactions }
+        val allTransactions: List<Transaction<*>> = expenseReports
+            .flatMap { it.transactions }
+            .filter { transaction ->
+                importInput.aggregation.dateRange?.let { dateRange ->
+                    isInDateRange(transaction.date, dateRange)
+                } ?: true
+            }
 
         // 4. Try to match transactions from the reports to expected expenses
         val expectedExpenseMatcher = DescriptionPatternExpectedExpenseMatcher(expectedExpensePatterns)
@@ -189,5 +197,9 @@ class ImportTask(
             val reportReader = expenseReportReaderSelector.getReader(reportType)
             reportReader?.read(it) ?: throw IllegalArgumentException("No report reader found for report type: $reportType")
         }
+    }
+
+    fun isInDateRange(date: LocalDate, dateRange: DateRange): Boolean {
+        return dateRange.startDate <= date && date <= dateRange.endDate
     }
 }
