@@ -59,5 +59,8 @@
     "discoverCategories": {
       "path": "src/test/resources/discover_categories.csv"
     }
+  },
+  "aggregation": {
+    "aggregationType": "CategoryAndInstrument"
   }
 }

@@ -13,6 +13,12 @@ interface AggregateBy {
     }
 }
 
+object AggregateNothing : AggregateBy {
+    override fun groupingFun(t: Transaction<*>): Any? = t
+
+    override fun aggregate(transactions: List<Transaction<*>>): List<Transaction<*>> = transactions
+}
+
 object AggregateByCategory : AggregateBy { override fun groupingFun(t: Transaction<*>): Any? = t.category }
 
 object AggregateByInstrument : AggregateBy { override fun groupingFun(t: Transaction<*>): Any? = t.instrument }

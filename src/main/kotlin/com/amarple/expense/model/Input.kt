@@ -7,6 +7,7 @@ data class ImportInput(
     val reports: List<ExpenseReportInput>,
     val expectedExpenses: ExpectedExpensesInput,
     val categories: CategoriesInput,
+    val aggregation: AggregationInput = AggregationInput(),
 )
 
 data class ExpenseReportInput(
@@ -53,3 +54,14 @@ data class ChaseCategoryInput(
 data class DiscoverCategoryInput(
     val path: String,
 )
+
+data class AggregationInput(
+    val aggregationType: AggregationType = AggregationType.CategoryAndInstrument,
+)
+
+enum class AggregationType {
+    Nothing,
+    Category,
+    Instrument,
+    CategoryAndInstrument,
+}
