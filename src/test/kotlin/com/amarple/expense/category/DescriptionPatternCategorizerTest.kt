@@ -46,4 +46,23 @@ class DescriptionPatternCategorizerTest {
 
         assertEquals(category1, categorizer.categorize(t))
     }
+
+    @Test
+    fun `should match a permutation of a description`() {
+        val category1 = Category("Cat1", "Sub1")
+        val category2 = Category("Cat2", "Sub2")
+
+        val patterns = listOf(
+            DescriptionPatternCategory("^DUNKIN", category1),
+            DescriptionPatternCategory(".*", category2)
+        )
+
+        val t1 = BasicTransaction(LocalDate.now(), -10.0, "DUNKIN", null, null)
+        val t2 = BasicTransaction(LocalDate.now(), -10.0, "PURCHASE AUTHORIZED ON 12/22 DUNKIN", null, null)
+
+        val categorizer = DescriptionPatternCategorizer(patterns)
+
+        assertEquals(category1, categorizer.categorize(t1))
+        assertEquals(category1, categorizer.categorize(t2))
+    }
 }
