@@ -1,5 +1,6 @@
 package com.amarple.expense.cli
 
+import com.amarple.expense.ExpenseApplication
 import com.amarple.expense.model.AmExCategoryInput
 import com.amarple.expense.model.CapitalOneCategoryInput
 import com.amarple.expense.model.ChaseCategoryInput
@@ -11,14 +12,17 @@ import com.amarple.expense.model.DescriptionPatternCategoryInput
 import com.amarple.expense.model.DiscoverCategoryInput
 import com.amarple.expense.model.ExpenseReportInput
 import com.amarple.expense.model.internal.Category
-import com.amarple.expense.read.report.ExpenseReportType
+import com.amarple.expense.model.ExpenseReportType
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.beans.factory.annotation.Autowired
 import java.time.LocalDate
 import kotlin.test.assertTrue
 
+@SpringBootTest(classes = [ExpenseApplication::class])
 class ImportTaskComponentTest {
     lateinit var discoverExpensesCsvPath: String
     lateinit var boaExpensesCsvPath: String
@@ -33,6 +37,9 @@ class ImportTaskComponentTest {
     lateinit var capitalOneCategoriesCsvPath: String
     lateinit var chaseCategoriesCsvPath: String
     lateinit var discoverCategoriesCsvPath: String
+
+    @Autowired
+    lateinit var importTask: ImportTask
 
     @BeforeEach
     fun setUp() {
@@ -53,14 +60,13 @@ class ImportTaskComponentTest {
 
     @Test
     fun `execute should work with minimal input`() {
-        val task = ImportTask()
         val input = ImportInput(
             reports = emptyList(),
             expectedExpenses = ExpectedExpensesInput(expectedExpensesCsvPath, DescriptionPatternExpectedExpensesInput(expectedExpensesPatternsCsvPath)),
             categories = CategoriesInput( DescriptionPatternCategoryInput(categoryPatternsCsvPath))
         )
 
-        val result = task.execute(input)
+        val result = importTask.execute(input)
 
         assertNotNull(result)
         assertEquals(7, result.expectedExpenses.size)
@@ -68,7 +74,6 @@ class ImportTaskComponentTest {
 
     @Test
     fun `execute should work with non-empty reports`() {
-        val task = ImportTask()
         val input = ImportInput(
             reports = listOf(
                 ExpenseReportInput(
@@ -118,7 +123,7 @@ class ImportTaskComponentTest {
             )
         )
 
-        val result = task.execute(input)
+        val result = importTask.execute(input)
 
         assertNotNull(result)
         assertEquals(7, result.expectedExpenses.size)

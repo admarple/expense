@@ -1,6 +1,7 @@
 package com.amarple.expense.read.report
 
 import com.amarple.expense.model.ExpenseReportInput
+import com.amarple.expense.model.ExpenseReportType
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDate

@@ -1,5 +1,6 @@
 package com.amarple.expense.category
 
+import com.amarple.expense.model.AggregationType
 import com.amarple.expense.model.internal.AggregatedTransaction
 import com.amarple.expense.model.internal.Transaction
 
@@ -11,6 +12,12 @@ interface AggregateBy {
             .groupBy { groupingFun(it) }
             .map { AggregatedTransaction(it.value) }
     }
+}
+
+class AggregationSelector(
+    private val aggregators: Map<AggregationType?, AggregateBy>
+) {
+    fun getAggregator(type: AggregationType?): AggregateBy = aggregators.getValue(type)
 }
 
 object AggregateNothing : AggregateBy {

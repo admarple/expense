@@ -1,6 +1,5 @@
 package com.amarple.expense.model
 
-import com.amarple.expense.read.report.ExpenseReportType
 import com.fasterxml.jackson.annotation.JsonFormat
 import java.time.LocalDate
 
@@ -17,6 +16,15 @@ data class ExpenseReportInput(
     val retrievalDate: LocalDate? = null,
     val reportType: ExpenseReportType,
 )
+
+enum class ExpenseReportType {
+    BankOfAmerica,
+    Discover,
+    WellsFargo,
+    AmericanExpress,
+    Chase,
+    CapitalOne,
+}
 
 data class ExpectedExpensesInput(
     val path: String,
@@ -57,7 +65,7 @@ data class DiscoverCategoryInput(
 )
 
 data class AggregationInput(
-    val aggregationType: AggregationType = AggregationType.CategoryAndInstrument,
+    val aggregationType: AggregationType? = null,
     val dateRange: DateRange? = null,
 )
 

@@ -1,5 +1,6 @@
 package com.amarple.expense.category
 
+import com.amarple.expense.model.AggregationType
 import com.amarple.expense.model.internal.AggregatedTransaction
 import com.amarple.expense.model.internal.BasicTransaction
 import com.amarple.expense.model.internal.Category
@@ -7,7 +8,9 @@ import com.amarple.expense.model.internal.PaymentInstrument
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertNotNull
 import java.time.LocalDate
+import kotlin.test.assertSame
 
 class AggregateByTest {
     lateinit var category1: Category
@@ -107,5 +110,36 @@ class AggregateByTest {
         val agg = result[0] as AggregatedTransaction
         assertEquals(null, agg.instrument)
         assertEquals(-70.0, agg.amount)
+    }
+}
+
+class AggregationSelectorTest {
+    private lateinit var selector: AggregationSelector
+
+    @BeforeEach
+    fun setUp() {
+        selector = AggregationSelector(
+            mapOf<AggregationType?, AggregateBy>(
+                AggregationType.Nothing to AggregateNothing,
+                AggregationType.Category to AggregateByCategory,
+                AggregationType.Instrument to AggregateByInstrument,
+            ).withDefault { AggregateByCategoryAndInstrument }
+        )
+    }
+
+    @Test
+    fun `should return an aggregator based on the aggregation type`() {
+        assertSame(AggregateByInstrument, selector.getAggregator(AggregationType.Instrument))
+        assertSame(AggregateByCategory, selector.getAggregator(AggregationType.Category))
+    }
+
+    @Test
+    fun `should return an aggregator even for a missing key`() {
+        assertSame(AggregateByCategoryAndInstrument, selector.getAggregator(AggregationType.CategoryAndInstrument))
+    }
+
+    @Test
+    fun `should return an aggregator even for a null key`() {
+        assertSame(AggregateByCategoryAndInstrument, selector.getAggregator(null))
     }
 }

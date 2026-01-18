@@ -1,10 +1,7 @@
 package com.amarple.expense.cli
 
 import com.amarple.expense.category.AggregateBy
-import com.amarple.expense.category.AggregateByCategory
-import com.amarple.expense.category.AggregateByCategoryAndInstrument
-import com.amarple.expense.category.AggregateByInstrument
-import com.amarple.expense.category.AggregateNothing
+import com.amarple.expense.category.AggregationSelector
 import com.amarple.expense.category.AmExCategoryCategorizer
 import com.amarple.expense.category.BespokeCategorizer
 import com.amarple.expense.category.CapitalOneCategoryCategorizer
@@ -13,7 +10,6 @@ import com.amarple.expense.category.DescriptionPatternCategorizer
 import com.amarple.expense.category.DiscoverCategoryCategorizer
 import com.amarple.expense.category.StaticCategorizer
 import com.amarple.expense.expected.DescriptionPatternExpectedExpenseMatcher
-import com.amarple.expense.model.AggregationType
 import com.amarple.expense.model.DateRange
 import com.amarple.expense.model.ImportInput
 import com.amarple.expense.model.ImportOutput
@@ -32,38 +28,22 @@ import com.amarple.expense.read.config.DescriptionPatternCategoryReader
 import com.amarple.expense.read.config.DescriptionPatternExpectedExpenseReader
 import com.amarple.expense.read.config.DiscoverCategoryReader
 import com.amarple.expense.read.expected.ExpectedExpenseReader
-import com.amarple.expense.read.expected.UberSheetExpectedExpenseReader
-import com.amarple.expense.read.report.AmExExpenseReportReader
-import com.amarple.expense.read.report.BoaExpenseReportReader
-import com.amarple.expense.read.report.CapitalOneExpenseReportReader
-import com.amarple.expense.read.report.ChaseExpenseReportReader
-import com.amarple.expense.read.report.DiscoverExpenseReportReader
 import com.amarple.expense.read.report.ExpenseReportReaderSelector
-import com.amarple.expense.read.report.ExpenseReportType
-import com.amarple.expense.read.report.WellsFargoExpenseReportReader
 import java.time.LocalDate
 import java.time.YearMonth
 import kotlin.collections.firstOrNull
 import kotlin.collections.forEachIndexed
 
 class ImportTask(
-    private val expectedExpenseReader: ExpectedExpenseReader = UberSheetExpectedExpenseReader(),
-    private val amExCategoryCategoryReader: AmExCategoryReader = AmExCategoryReader(),
-    private val capitalOneCategoryReader: CapitalOneCategoryReader = CapitalOneCategoryReader(),
-    private val chaseCategoryReader: ChaseCategoryReader = ChaseCategoryReader(),
-    private val discoverCategoryReader: DiscoverCategoryReader = DiscoverCategoryReader(),
-    private val patternCategoryReader: DescriptionPatternCategoryReader = DescriptionPatternCategoryReader(),
-    private val patternExpectedExpenseReader: DescriptionPatternExpectedExpenseReader = DescriptionPatternExpectedExpenseReader(),
-    private val expenseReportReaderSelector: ExpenseReportReaderSelector = ExpenseReportReaderSelector(
-        mapOf(
-            ExpenseReportType.Discover to DiscoverExpenseReportReader(),
-            ExpenseReportType.BankOfAmerica to BoaExpenseReportReader(),
-            ExpenseReportType.WellsFargo to WellsFargoExpenseReportReader(),
-            ExpenseReportType.AmericanExpress to AmExExpenseReportReader(),
-            ExpenseReportType.CapitalOne to CapitalOneExpenseReportReader(),
-            ExpenseReportType.Chase to ChaseExpenseReportReader(),
-        )
-    ),
+    private val expectedExpenseReader: ExpectedExpenseReader,
+    private val amExCategoryCategoryReader: AmExCategoryReader,
+    private val capitalOneCategoryReader: CapitalOneCategoryReader,
+    private val chaseCategoryReader: ChaseCategoryReader,
+    private val discoverCategoryReader: DiscoverCategoryReader,
+    private val patternCategoryReader: DescriptionPatternCategoryReader,
+    private val patternExpectedExpenseReader: DescriptionPatternExpectedExpenseReader,
+    private val expenseReportReaderSelector: ExpenseReportReaderSelector,
+    private val aggregationSelector: AggregationSelector,
 ) {
     fun execute(importInput: ImportInput): ImportOutput {
         // 1. Read the expected expenses using the classes in com.amarple.expense.read.expected
@@ -123,12 +103,7 @@ class ImportTask(
         // 5.c. TODO: find a way to categorize incoming deposits and outgoing transfers so that we can return them separately
 
         // 6. Calculate new AggregatedTransactions
-        val aggregator: AggregateBy = when (importInput.aggregation.aggregationType) {
-            AggregationType.Nothing -> AggregateNothing
-            AggregationType.Category -> AggregateByCategory
-            AggregationType.Instrument -> AggregateByInstrument
-            AggregationType.CategoryAndInstrument -> AggregateByCategoryAndInstrument
-        }
+        val aggregator: AggregateBy = aggregationSelector.getAggregator(importInput.aggregation.aggregationType)
         // 6.a. Exclude transactions that have already been matched to expected expenses ...
         val unmatchedTransactions = allTransactions.filter { !transactionToMatchedExpectedIndexes.containsKey(it) }
         val categorizedTransactions = unmatchedTransactions.map { transaction: Transaction<*> ->

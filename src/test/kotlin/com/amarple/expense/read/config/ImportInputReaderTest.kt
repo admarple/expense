@@ -9,7 +9,7 @@ import com.amarple.expense.model.DescriptionPatternExpectedExpensesInput
 import com.amarple.expense.model.CategoriesInput
 import com.amarple.expense.model.DateRange
 import com.amarple.expense.model.DescriptionPatternCategoryInput
-import com.amarple.expense.read.report.ExpenseReportType
+import com.amarple.expense.model.ExpenseReportType
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.io.File

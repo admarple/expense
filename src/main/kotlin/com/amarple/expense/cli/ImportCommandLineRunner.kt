@@ -10,11 +10,11 @@ import org.apache.commons.cli.Options
 import org.apache.commons.cli.ParseException
 import org.slf4j.LoggerFactory
 import org.springframework.boot.CommandLineRunner
-import org.springframework.stereotype.Component
 import kotlin.system.exitProcess
 
-@Component
-class ImportCommandLineRunner : CommandLineRunner {
+class ImportCommandLineRunner(
+    private val importTask: ImportTask
+) : CommandLineRunner {
     private val logger = LoggerFactory.getLogger(ImportCommandLineRunner::class.java)
 
     override fun run(vararg args: String) {
@@ -41,10 +41,11 @@ class ImportCommandLineRunner : CommandLineRunner {
 
             val importInput = ImportInputReader().read(inputPath)
 
-            val importOutput = ImportTask().execute(importInput)
+            val importOutput = importTask.execute(importInput)
 
             println(mapper.writeValueAsString(importOutput))
         } catch (e: ParseException) {
+            logger.error("Encountered an error during import", e)
             println(e.message)
             formatter.printHelp("xp-import", "", options, "", true)
             exitProcess(1)
