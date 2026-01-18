@@ -28,11 +28,11 @@ data class BasicTransaction(
 }
 
 data class AggregatedTransaction(
-    val transactions: List<Transaction<*>> = emptyList()
+    val transactions: List<Transaction<*>> = emptyList(),
+    override val description: String = "aggregated transactions: ${transactions.size}"
 ) : Transaction<AggregatedTransaction> {
     override val date: LocalDate = transactions.maxBy { it.date }.date
     override val amount: Double = transactions.sumOf { it.amount }
-    override val description: String = "aggregated transactions: ${transactions.size}"
     override val instrument: PaymentInstrument? = transactions.map { it.instrument }.firstOrNull()
     override val category: Category? = transactions.map { it.category }.firstOrNull()
 

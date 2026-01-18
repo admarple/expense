@@ -1,6 +1,7 @@
 package com.amarple.expense.cli
 
 import com.amarple.expense.category.AggregateBy
+import com.amarple.expense.category.AggregateEverything
 import com.amarple.expense.category.AggregationSelector
 import com.amarple.expense.category.AmExCategoryCategorizer
 import com.amarple.expense.category.BespokeCategorizer
@@ -13,6 +14,7 @@ import com.amarple.expense.expected.DescriptionPatternExpectedExpenseMatcher
 import com.amarple.expense.model.DateRange
 import com.amarple.expense.model.ImportInput
 import com.amarple.expense.model.ImportOutput
+import com.amarple.expense.model.internal.AggregatedTransaction
 import com.amarple.expense.model.internal.BasicTransaction
 import com.amarple.expense.model.internal.Category
 import com.amarple.expense.model.internal.ExpectedExpense
@@ -125,19 +127,9 @@ class ImportTask(
         // 7. Build the response, including ...
         // 7.a. ... a list of transactions for expected expenses, in the same order as config, with null to designate expenses where no transaction was matched
         val expectedResults = expectedExpenses.mapIndexed { index, expense ->
-            matchedTransactions[index]?.firstOrNull()
+            matchedTransactions[index]
+                ?.let { AggregatedTransaction(transactions = it, description = expense.name) }
                 ?.updateCategory(category = expense.expectedTransaction.category)
-                ?.let {
-                    // This is the point at which the Transaction from the report is dropped
-                    // TODO: should we preserve the transaction from the report?
-                    BasicTransaction(
-                        description = expense.name,
-                        amount = it.amount,
-                        date = it.date,
-                        category = it.category,
-                        instrument = it.instrument,
-                    )
-                }
         }
 
         // 7.e. ... warnings for ...

@@ -26,6 +26,8 @@ object AggregateNothing : AggregateBy {
     override fun aggregate(transactions: List<Transaction<*>>): List<Transaction<*>> = transactions
 }
 
+object AggregateEverything : AggregateBy { override fun groupingFun(t: Transaction<*>): Any? = null }
+
 object AggregateByCategory : AggregateBy { override fun groupingFun(t: Transaction<*>): Any? = t.category }
 
 object AggregateByInstrument : AggregateBy { override fun groupingFun(t: Transaction<*>): Any? = t.instrument }
