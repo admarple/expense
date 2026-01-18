@@ -1,7 +1,6 @@
 package com.amarple.expense.cli
 
 import com.amarple.expense.category.AggregateBy
-import com.amarple.expense.category.AggregateEverything
 import com.amarple.expense.category.AggregationSelector
 import com.amarple.expense.category.AmExCategoryCategorizer
 import com.amarple.expense.category.BespokeCategorizer
@@ -15,7 +14,6 @@ import com.amarple.expense.model.DateRange
 import com.amarple.expense.model.ImportInput
 import com.amarple.expense.model.ImportOutput
 import com.amarple.expense.model.internal.AggregatedTransaction
-import com.amarple.expense.model.internal.BasicTransaction
 import com.amarple.expense.model.internal.Category
 import com.amarple.expense.model.internal.ExpectedExpense
 import com.amarple.expense.model.internal.ExpenseReport
@@ -81,12 +79,12 @@ class ImportTask(
 
         // 4. Try to match transactions from the reports to expected expenses
         val expectedExpenseMatcher = DescriptionPatternExpectedExpenseMatcher(expectedExpensePatterns)
-        val matchedTransactions = mutableMapOf<Int, MutableList<Transaction<*>>>() // Index of expected expense to transactions
+        val matchedTransactionsByExpenseIndex = mutableMapOf<Int, MutableList<Transaction<*>>>() // Index of expected expense to transactions
         val transactionToMatchedExpectedIndexes = mutableMapOf<Transaction<*>, MutableList<Int>>()
 
         expectedExpenses.forEachIndexed { index, expectedExpense: ExpectedExpense<*> ->
             expectedExpenseMatcher.match(expectedExpense, allTransactions).forEach { transaction: Transaction<*> ->
-                matchedTransactions.getOrPut(index) { mutableListOf() }.add(transaction)
+                matchedTransactionsByExpenseIndex.getOrPut(index) { mutableListOf() }.add(transaction)
                 transactionToMatchedExpectedIndexes.getOrPut(transaction) { mutableListOf() }.add(index)
             }
         }
@@ -127,7 +125,7 @@ class ImportTask(
         // 7. Build the response, including ...
         // 7.a. ... a list of transactions for expected expenses, in the same order as config, with null to designate expenses where no transaction was matched
         val expectedResults = expectedExpenses.mapIndexed { index, expense ->
-            matchedTransactions[index]
+            matchedTransactionsByExpenseIndex[index]
                 ?.let { AggregatedTransaction(transactions = it, description = expense.name) }
                 ?.updateCategory(category = expense.expectedTransaction.category)
         }
@@ -135,7 +133,7 @@ class ImportTask(
         // 7.e. ... warnings for ...
         val warnings = mutableListOf<String>()
         // 7.e.2. ... any expected expenses that matched multiple transactions
-        matchedTransactions.forEach { (index, transactions) ->
+        matchedTransactionsByExpenseIndex.forEach { (index, transactions) ->
             if (transactions.size > 1) {
                 warnings.add("Expected expense '${expectedExpenses[index].name}' matched ${transactions.size} transactions")
             }
@@ -145,6 +143,12 @@ class ImportTask(
             if (indexes.size > 1) {
                 val expenseNames = indexes.joinToString { expectedExpenses[it].name }
                 warnings.add("Transaction '${transaction.description}' matched multiple expected expenses: $expenseNames")
+            }
+        }
+        // 7.e.4 ... any expected expenses that did not match any transactions
+        expectedExpenses.forEachIndexed { index, expense ->
+            if (!matchedTransactionsByExpenseIndex.containsKey(index)) {
+                warnings.add("Expected expense '${expense.name}' did not match any transactions")
             }
         }
 
