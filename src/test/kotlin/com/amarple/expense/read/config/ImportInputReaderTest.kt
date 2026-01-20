@@ -22,7 +22,7 @@ class ImportInputReaderTest {
         val expectedImportInput = ImportInput(
             reports = listOf(ExpenseReportInput("path/to/report", "Source", reportType = ExpenseReportType.BankOfAmerica)),
             expectedExpenses = ExpectedExpensesInput("path/to/expected", DescriptionPatternExpectedExpensesInput("path/to/patterns")),
-            categories = CategoriesInput(DescriptionPatternCategoryInput("path/to/category/patterns")),
+            categories = CategoriesInput(descriptionPatterns = DescriptionPatternCategoryInput("path/to/category/patterns")),
             aggregation = AggregationInput(dateRange = DateRange(LocalDate.of(2025, 12, 1), LocalDate.of(2025, 12, 31)))
         )
 

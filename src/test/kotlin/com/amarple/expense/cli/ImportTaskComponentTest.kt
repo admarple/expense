@@ -63,7 +63,7 @@ class ImportTaskComponentTest {
         val input = ImportInput(
             reports = emptyList(),
             expectedExpenses = ExpectedExpensesInput(expectedExpensesCsvPath, DescriptionPatternExpectedExpensesInput(expectedExpensesPatternsCsvPath)),
-            categories = CategoriesInput( DescriptionPatternCategoryInput(categoryPatternsCsvPath))
+            categories = CategoriesInput(descriptionPatterns = DescriptionPatternCategoryInput(categoryPatternsCsvPath))
         )
 
         val result = importTask.execute(input)

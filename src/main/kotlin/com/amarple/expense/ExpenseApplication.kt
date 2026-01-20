@@ -6,12 +6,15 @@ import com.amarple.expense.category.AggregateByCategoryAndInstrument
 import com.amarple.expense.category.AggregateByInstrument
 import com.amarple.expense.category.AggregateNothing
 import com.amarple.expense.category.AggregationSelector
+import com.amarple.expense.category.DiscretionaryTransactionSorter
+import com.amarple.expense.category.DiscretionaryTransactionsBeautifier
 import com.amarple.expense.cli.ImportCommandLineRunner
 import com.amarple.expense.cli.ImportTask
 import com.amarple.expense.model.AggregationType
 import com.amarple.expense.model.ExpenseReportType
 import com.amarple.expense.read.config.AmExCategoryReader
 import com.amarple.expense.read.config.CapitalOneCategoryReader
+import com.amarple.expense.read.config.CategoryHierarchyReader
 import com.amarple.expense.read.config.ChaseCategoryReader
 import com.amarple.expense.read.config.DescriptionPatternCategoryReader
 import com.amarple.expense.read.config.DescriptionPatternExpectedExpenseReader
@@ -47,6 +50,9 @@ class ExpenseApplication {
     fun discoverCategoryReader(): DiscoverCategoryReader = DiscoverCategoryReader()
 
     @Bean
+    fun categoryHierarchyReader(): CategoryHierarchyReader = CategoryHierarchyReader()
+
+    @Bean
     fun patternCategoryReader(): DescriptionPatternCategoryReader = DescriptionPatternCategoryReader()
 
     @Bean
@@ -75,26 +81,38 @@ class ExpenseApplication {
     )
 
     @Bean
+    fun discretionaryTransactionSorter(): DiscretionaryTransactionSorter = DiscretionaryTransactionSorter()
+
+    @Bean
+    fun discretionaryTransactionsBeautifier(): DiscretionaryTransactionsBeautifier = DiscretionaryTransactionsBeautifier()
+
+    @Bean
     fun importTask(
         expectedExpenseReader: ExpectedExpenseReader,
         amExCategoryReader: AmExCategoryReader,
         capitalOneCategoryReader: CapitalOneCategoryReader,
         chaseCategoryReader: ChaseCategoryReader,
         discoverCategoryReader: DiscoverCategoryReader,
+        categoryHierarchyReader: CategoryHierarchyReader,
         patternCategoryReader: DescriptionPatternCategoryReader,
         patternExpectedExpenseReader: DescriptionPatternExpectedExpenseReader,
         expenseReportReaderSelector: ExpenseReportReaderSelector,
         aggregationSelector: AggregationSelector,
+        discretionaryTransactionSorter: DiscretionaryTransactionSorter,
+        discretionaryTransactionsBeautifier: DiscretionaryTransactionsBeautifier,
     ): ImportTask = ImportTask(
         expectedExpenseReader,
         amExCategoryReader,
         capitalOneCategoryReader,
         chaseCategoryReader,
         discoverCategoryReader,
+        categoryHierarchyReader,
         patternCategoryReader,
         patternExpectedExpenseReader,
         expenseReportReaderSelector,
         aggregationSelector,
+        discretionaryTransactionSorter,
+        discretionaryTransactionsBeautifier,
     )
 
     @Bean

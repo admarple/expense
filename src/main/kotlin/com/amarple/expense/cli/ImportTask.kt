@@ -8,13 +8,17 @@ import com.amarple.expense.category.CapitalOneCategoryCategorizer
 import com.amarple.expense.category.ChaseCategoryCategorizer
 import com.amarple.expense.category.DescriptionPatternCategorizer
 import com.amarple.expense.category.DiscoverCategoryCategorizer
+import com.amarple.expense.category.DiscretionaryTransactionSorter
+import com.amarple.expense.category.DiscretionaryTransactionsBeautifier
 import com.amarple.expense.category.StaticCategorizer
 import com.amarple.expense.expected.DescriptionPatternExpectedExpenseMatcher
+import com.amarple.expense.model.AggregationType
 import com.amarple.expense.model.DateRange
 import com.amarple.expense.model.ImportInput
 import com.amarple.expense.model.ImportOutput
 import com.amarple.expense.model.internal.AggregatedTransaction
 import com.amarple.expense.model.internal.Category
+import com.amarple.expense.model.internal.DEPOSITS
 import com.amarple.expense.model.internal.ExpectedExpense
 import com.amarple.expense.model.internal.ExpenseReport
 import com.amarple.expense.model.internal.PAYMENTS
@@ -23,6 +27,7 @@ import com.amarple.expense.model.internal.TRANSFERS
 import com.amarple.expense.model.internal.Transaction
 import com.amarple.expense.read.config.AmExCategoryReader
 import com.amarple.expense.read.config.CapitalOneCategoryReader
+import com.amarple.expense.read.config.CategoryHierarchyReader
 import com.amarple.expense.read.config.ChaseCategoryReader
 import com.amarple.expense.read.config.DescriptionPatternCategoryReader
 import com.amarple.expense.read.config.DescriptionPatternExpectedExpenseReader
@@ -40,10 +45,13 @@ class ImportTask(
     private val capitalOneCategoryReader: CapitalOneCategoryReader,
     private val chaseCategoryReader: ChaseCategoryReader,
     private val discoverCategoryReader: DiscoverCategoryReader,
+    private val categoryHierarchyReader: CategoryHierarchyReader,
     private val patternCategoryReader: DescriptionPatternCategoryReader,
     private val patternExpectedExpenseReader: DescriptionPatternExpectedExpenseReader,
     private val expenseReportReaderSelector: ExpenseReportReaderSelector,
     private val aggregationSelector: AggregationSelector,
+    private val discretionaryTransactionSorter: DiscretionaryTransactionSorter,
+    private val discretionaryTransactionsBeautifier: DiscretionaryTransactionsBeautifier,
 ) {
     fun execute(importInput: ImportInput): ImportOutput {
         // 1. Read the expected expenses using the classes in com.amarple.expense.read.expected
@@ -53,6 +61,7 @@ class ImportTask(
         val expectedExpensePatterns = patternExpectedExpenseReader.read(importInput.expectedExpenses.descriptionPatterns)
 
         // 2. Read the configuration for categories, which will be used when categorizing expenses
+        val allCategories = importInput.categories.hierarchy?.let { categoryHierarchyReader.read(it) }
         val categoryPatterns = patternCategoryReader.read(importInput.categories.descriptionPatterns)
         val amExCategories = importInput.categories.amExCategories
             ?.let { amExCategoryCategoryReader.read(it) }
@@ -115,12 +124,25 @@ class ImportTask(
             }
         }
         // 6.b. From transactions, exclude ...
-        val transactionsToAggregate = categorizedTransactions
-            .filter { it.category != PAYMENTS } // 6.b.1. payments, TODO: add a check that the total of payments across all instruments is 0, i.e. positive credits on cards negates payments from a bank account
-            .filter { it.category != REWARDS } // 6.b.2. rewards, TODO: return rewards so they can be included in income
-            .filter { it.category != TRANSFERS } // 6.b.3. and incoming deposits TODO: remove this line after adding a better way to filter out incoming deposits
+        val (discretionarySpendTransactions, incomeAndTransferTransactions) = categorizedTransactions.partition {
+            it.category != PAYMENTS  // 6.b.1. payments,
+                && it.category != REWARDS // 6.b.2. rewards,
+                && it.category != DEPOSITS // 6.b.3. and incoming deposits,
+                && it.category != TRANSFERS // 6.b.4 and transfers between accounts
+        }
+        // TODO: add rewards and deposits as income
+        // TODO: do we want to track or validate payments?
+        // TODO: do we want to track transfers as income (like deposits)?
         // 6.c. ... and group transactions by category and instrument
-        val aggregatedTransactions = aggregator.aggregate(transactionsToAggregate)
+        val aggregatedDiscretionarySpendTransactions = aggregator.aggregate(discretionarySpendTransactions)
+            .let { discretionaryTransactionSorter.sort(it, importInput.aggregation.aggregationType) }
+            .let {
+                if (importInput.aggregation.aggregationType == AggregationType.Category && !allCategories.isNullOrEmpty()) {
+                    discretionaryTransactionsBeautifier.beautifyForCategory(it, allCategories)
+                } else {
+                    it
+                }
+            }
 
         // 7. Build the response, including ...
         // 7.a. ... a list of transactions for expected expenses, in the same order as config, with null to designate expenses where no transaction was matched
@@ -152,9 +174,13 @@ class ImportTask(
             }
         }
 
+        incomeAndTransferTransactions.forEach { transaction ->
+            warnings.add("Transaction '${transaction}' found but not included.")
+        }
+
         return ImportOutput(
             expectedExpenses = expectedResults,
-            categorizedExpenses = aggregatedTransactions,
+            categorizedExpenses = aggregatedDiscretionarySpendTransactions,
             outgoingTransfers = emptyList(), // 7.c. TODO: ... a list of transactions for outgoing transfers
             incomingDeposits = emptyList(), // 7.d. TODO: ... a list of transactions for incoming deposits or rewards
             warnings = warnings,
