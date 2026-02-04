@@ -39,15 +39,20 @@ class DiscretionaryTransactionsBeautifierTest {
 
         assertEquals(3, result.size)
 
-        assertEquals(category1, result[0].category)
-        assertEquals("Entertainment - Media", result[0].description)
+        result[0].let {
+            assertEquals(category1, it.category)
+            assertEquals("Entertainment - Media", it.description)
+        }
 
-        assertEquals(category2, result[1].category)
-        assertEquals("No transactions found", result[1].description)
-        assertEquals(0.0, result[1].amount)
+        result[1].let {
+            assertEquals(category2, it.category)
+            assertEquals("No transactions found", it.description)
+            assertEquals(0.0, it.amount)
+        }
 
-        assertEquals(category3, result[2].category)
-        assertEquals("Travel - Vacation", result[2].description)
-
+        result[2].let {
+            assertEquals(category3, it.category)
+            assertEquals("Travel - Vacation", it.description)
+        }
     }
 }

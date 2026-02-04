@@ -13,16 +13,23 @@ class DescriptionPatternCategoryReaderTest {
         val result = reader.read(DescriptionPatternCategoryInput(csvPath))
 
         assertEquals(6, result.size)
-        assertEquals("^SEPTA.*CARD", result[0].pattern)
-        assertEquals("Transportation", result[0].category.category)
-        assertEquals("Public Transit", result[0].category.subcategory)
 
-        assertEquals("^Rally House Wayne PA", result[1].pattern)
-        assertEquals("Gifts", result[1].category.category)
-        assertEquals("Friends & Family", result[1].category.subcategory)
+        result[0].let {
+            assertEquals("^SEPTA.*CARD", it.pattern)
+            assertEquals("Transportation", it.category.category)
+            assertEquals("Public Transit", it.category.subcategory)
+        }
 
-        assertEquals("^SQ \\*", result[2].pattern)
-        assertEquals("Entertainment", result[2].category.category)
-        assertEquals("Restaurants & Bars", result[2].category.subcategory)
+        result[1].let {
+            assertEquals("^Rally House Wayne PA", it.pattern)
+            assertEquals("Gifts", it.category.category)
+            assertEquals("Friends & Family", it.category.subcategory)
+        }
+
+        result[2].let {
+            assertEquals("^SQ \\*", it.pattern)
+            assertEquals("Entertainment", it.category.category)
+            assertEquals("Restaurants & Bars", it.category.subcategory)
+        }
     }
 }

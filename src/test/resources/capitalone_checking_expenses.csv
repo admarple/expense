@@ -1,0 +1,4 @@
+Account Number,Transaction Description,Transaction Date,Transaction Type,Transaction Amount,Balance
+1111,Withdrawal from ATT PAYMENT,01/16/26,Debit,34.56,65.44
+1111,Withdrawal from VENMO PAYMENT,01/14/26,Debit,23.45,100.00
+1111,Deposit from WELLS FARGO IFI DDA TO DDA ZZZZZZZZZZ,01/13/26,Credit,123.45,123.45

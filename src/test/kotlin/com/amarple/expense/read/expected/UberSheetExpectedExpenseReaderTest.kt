@@ -15,21 +15,27 @@ class UberSheetExpectedExpenseReaderTest {
 
         val result = reader.read(ExpectedExpensesInput(csvPath, DescriptionPatternExpectedExpensesInput("")))
 
-        assertEquals(7, result.size)
+        assertEquals(8, result.size)
 
-        assertEquals("Alex's Bank of America (less fixed)", result[0].name)
-        assertEquals(-123.45, result[0].expectedTransaction.amount)
-        assertEquals(Category("Entertainment", "Miscellaneous"), result[0].expectedTransaction.category)
-        assertEquals("Alex's Bank of America", result[0].expectedTransaction.instrument?.name)
+        result[0].let {
+            assertEquals("Alex's Bank of America (less fixed)", it.name)
+            assertEquals(-123.45, it.expectedTransaction.amount)
+            assertEquals(Category("Entertainment", "Miscellaneous"), it.expectedTransaction.category)
+            assertEquals("Alex's Bank of America", it.expectedTransaction.instrument?.name)
+        }
 
-        assertEquals("Verizon (Internet)", result[5].name)
-        assertEquals(-39.99, result[5].expectedTransaction.amount)
-        assertEquals(Category("Utilities", "Miscellaneous"), result[5].expectedTransaction.category)
-        assertEquals("Joint Wells Fargo", result[5].expectedTransaction.instrument?.name)
+        result[5].let {
+            assertEquals("Verizon (Internet)", it.name)
+            assertEquals(-39.99, it.expectedTransaction.amount)
+            assertEquals(Category("Utilities", "Miscellaneous"), it.expectedTransaction.category)
+            assertEquals("Joint Wells Fargo", it.expectedTransaction.instrument?.name)
+        }
 
-        assertEquals("Apple Cloud Storage", result[6].name)
-        assertEquals(-2.99, result[6].expectedTransaction.amount)
-        assertEquals(Category("Utilities", "Miscellaneous"), result[6].expectedTransaction.category)
-        assertEquals("Alex's AmEx", result[6].expectedTransaction.instrument?.name)
+        result[7].let {
+            assertEquals("Apple Cloud Storage", it.name)
+            assertEquals(-2.99, it.expectedTransaction.amount)
+            assertEquals(Category("Utilities", "Miscellaneous"), it.expectedTransaction.category)
+            assertEquals("Alex's AmEx", it.expectedTransaction.instrument?.name)
+        }
     }
 }

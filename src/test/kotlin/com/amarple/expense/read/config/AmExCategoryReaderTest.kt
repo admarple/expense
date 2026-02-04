@@ -13,19 +13,26 @@ class AmExCategoryReaderTest {
         val result = reader.read(AmExCategoryInput(csvPath))
 
         assertEquals(14, result.size)
-        assertEquals("Restaurant", result[0].amExCategory)
-        assertEquals("Restaurant", result[0].amExSubcategory)
-        assertEquals("Entertainment", result[0].category.category)
-        assertEquals("Restaurants & Bars", result[0].category.subcategory)
 
-        assertEquals("Restaurant", result[2].amExCategory)
-        assertEquals(null, result[2].amExSubcategory)
-        assertEquals("Entertainment", result[2].category.category)
-        assertEquals("Restaurants & Bars", result[2].category.subcategory)
+        result[0].let {
+            assertEquals("Restaurant", it.amExCategory)
+            assertEquals("Restaurant", it.amExSubcategory)
+            assertEquals("Entertainment", it.category.category)
+            assertEquals("Restaurants & Bars", it.category.subcategory)
+        }
 
-        assertEquals("Entertainment", result[12].amExCategory)
-        assertEquals("Theatrical Events", result[12].amExSubcategory)
-        assertEquals("Entertainment", result[12].category.category)
-        assertEquals("Concerts & Events", result[12].category.subcategory)
+        result[2].let {
+            assertEquals("Restaurant", it.amExCategory)
+            assertEquals(null, it.amExSubcategory)
+            assertEquals("Entertainment", it.category.category)
+            assertEquals("Restaurants & Bars", it.category.subcategory)
+        }
+
+        result[12].let {
+            assertEquals("Entertainment", it.amExCategory)
+            assertEquals("Theatrical Events", it.amExSubcategory)
+            assertEquals("Entertainment", it.category.category)
+            assertEquals("Concerts & Events", it.category.subcategory)
+        }
     }
 }

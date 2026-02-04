@@ -11,6 +11,7 @@ import com.amarple.expense.category.DiscoverCategoryCategorizer
 import com.amarple.expense.category.DiscretionaryTransactionSorter
 import com.amarple.expense.category.DiscretionaryTransactionsBeautifier
 import com.amarple.expense.category.StaticCategorizer
+import com.amarple.expense.common.DescriptionPermuter
 import com.amarple.expense.expected.DescriptionPatternExpectedExpenseMatcher
 import com.amarple.expense.model.AggregationType
 import com.amarple.expense.model.DateRange
@@ -49,6 +50,7 @@ class ImportTask(
     private val patternCategoryReader: DescriptionPatternCategoryReader,
     private val patternExpectedExpenseReader: DescriptionPatternExpectedExpenseReader,
     private val expenseReportReaderSelector: ExpenseReportReaderSelector,
+    private val descriptionPermuter: DescriptionPermuter,
     private val aggregationSelector: AggregationSelector,
     private val discretionaryTransactionSorter: DiscretionaryTransactionSorter,
     private val discretionaryTransactionsBeautifier: DiscretionaryTransactionsBeautifier,
@@ -87,7 +89,7 @@ class ImportTask(
             }
 
         // 4. Try to match transactions from the reports to expected expenses
-        val expectedExpenseMatcher = DescriptionPatternExpectedExpenseMatcher(expectedExpensePatterns)
+        val expectedExpenseMatcher = DescriptionPatternExpectedExpenseMatcher(expectedExpensePatterns, descriptionPermuter)
         val matchedTransactionsByExpenseIndex = mutableMapOf<Int, MutableList<Transaction<*>>>() // Index of expected expense to transactions
         val transactionToMatchedExpectedIndexes = mutableMapOf<Transaction<*>, MutableList<Int>>()
 
@@ -106,7 +108,7 @@ class ImportTask(
                 CapitalOneCategoryCategorizer(capitalOneCategories),
                 ChaseCategoryCategorizer(chaseCategories),
             ),
-            DescriptionPatternCategorizer(categoryPatterns),
+            DescriptionPatternCategorizer(categoryPatterns, descriptionPermuter),
             StaticCategorizer(Category("Entertainment", "Miscellaneous"))
         )
         // 5.c. TODO: find a way to categorize incoming deposits and outgoing transfers so that we can return them separately

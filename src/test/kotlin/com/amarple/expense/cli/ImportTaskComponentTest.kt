@@ -29,6 +29,7 @@ class ImportTaskComponentTest {
     lateinit var wellsFargoExpensesCsvPath: String
     lateinit var amExExpensesCsvPath: String
     lateinit var capitalOneExpensesCsvPath: String
+    lateinit var capitalOneCheckingExpensesCsvPath: String
     lateinit var chaseExpensesCsvPath: String
     lateinit var expectedExpensesCsvPath: String
     lateinit var expectedExpensesPatternsCsvPath: String
@@ -48,6 +49,7 @@ class ImportTaskComponentTest {
         wellsFargoExpensesCsvPath = this::class.java.getResource("/wellsfargo_expenses.csv")!!.path
         amExExpensesCsvPath = this::class.java.getResource("/amex_expenses.csv")!!.path
         capitalOneExpensesCsvPath = this::class.java.getResource("/capitalone_expenses.csv")!!.path
+        capitalOneCheckingExpensesCsvPath = this::class.java.getResource("/capitalone_checking_expenses.csv")!!.path
         chaseExpensesCsvPath = this::class.java.getResource("/chase_expenses.csv")!!.path
         expectedExpensesCsvPath = this::class.java.getResource("/expected_expenses.csv")!!.path
         expectedExpensesPatternsCsvPath = this::class.java.getResource("/expected_expenses_description_patterns.csv")!!.path
@@ -69,7 +71,7 @@ class ImportTaskComponentTest {
         val result = importTask.execute(input)
 
         assertNotNull(result)
-        assertEquals(7, result.expectedExpenses.size)
+        assertEquals(8, result.expectedExpenses.size)
     }
 
     @Test
@@ -107,6 +109,12 @@ class ImportTaskComponentTest {
                     reportType = ExpenseReportType.CapitalOne,
                 ),
                 ExpenseReportInput(
+                    path = capitalOneCheckingExpensesCsvPath,
+                    source = "Holly's Capital One Checking",
+                    retrievalDate = LocalDate.now(),
+                    reportType = ExpenseReportType.CapitalOneChecking,
+                ),
+                ExpenseReportInput(
                     path = chaseExpensesCsvPath,
                     source = "Holly's Chase Slate",
                     retrievalDate = LocalDate.now(),
@@ -126,36 +134,53 @@ class ImportTaskComponentTest {
         val result = importTask.execute(input)
 
         assertNotNull(result)
-        assertEquals(7, result.expectedExpenses.size)
+        assertEquals(8, result.expectedExpenses.size)
         val matchedExpenses = result.expectedExpenses.filterNotNull()
-        assertEquals(5, matchedExpenses.size)
+        assertEquals(6, matchedExpenses.size)
 
-        assertEquals("WhiteTail (Waste)", matchedExpenses[0].description)
-        assertEquals(-13.0, result.expectedExpenses.filterNotNull()[0].amount)
-        assertEquals("Alex's Discover", matchedExpenses[0].instrument?.name)
-        assertEquals(Category("Utilities", "Miscellaneous"), matchedExpenses[0].category)
+        matchedExpenses[0].let {
+            assertEquals("WhiteTail (Waste)", it.description)
+            assertEquals(-13.0, result.expectedExpenses.filterNotNull()[0].amount)
+            assertEquals("Alex's Discover", it.instrument?.name)
+            assertEquals(Category("Utilities", "Miscellaneous"), it.category)
+        }
 
-        assertEquals("GasTec (Propane)", matchedExpenses[1].description)
-        assertEquals(-12.34, matchedExpenses[1].amount)
-        assertEquals("Alex's Discover", matchedExpenses[1].instrument?.name)
-        assertEquals(Category("Utilities", "Miscellaneous"), matchedExpenses[1].category)
+        matchedExpenses[1].let {
+            assertEquals("GasTec (Propane)", it.description)
+            assertEquals(-12.34, it.amount)
+            assertEquals("Alex's Discover", it.instrument?.name)
+            assertEquals(Category("Utilities", "Miscellaneous"), it.category)
+        }
 
-        assertEquals("COBRA", matchedExpenses[2].description)
-        assertEquals(-345.67, matchedExpenses[2].amount)
-        assertEquals("Joint Wells Fargo", matchedExpenses[2].instrument?.name)
-        assertEquals(Category("Health", "Physical Healthcare"), matchedExpenses[2].category)
+        matchedExpenses[2].let {
+            assertEquals("COBRA", it.description)
+            assertEquals(-345.67, it.amount)
+            assertEquals("Joint Wells Fargo", it.instrument?.name)
+            assertEquals(Category("Health", "Physical Healthcare"), it.category)
+        }
 
-        assertEquals("Verizon (Internet)", matchedExpenses[3].description)
-        assertEquals(-39.99, matchedExpenses[3].amount)
-        assertEquals("Joint Wells Fargo", matchedExpenses[3].instrument?.name)
-        assertEquals(Category("Utilities", "Miscellaneous"), matchedExpenses[3].category)
+        matchedExpenses[3].let {
+            assertEquals("Verizon (Internet)", it.description)
+            assertEquals(-39.99, it.amount)
+            assertEquals("Joint Wells Fargo", it.instrument?.name)
+            assertEquals(Category("Utilities", "Miscellaneous"), it.category)
+        }
 
-        assertEquals("Apple Cloud Storage", matchedExpenses[4].description)
-        assertEquals(-2.99, matchedExpenses[4].amount)
-        assertEquals("Alex's AmEx", matchedExpenses[4].instrument?.name)
-        assertEquals(Category("Utilities", "Miscellaneous"), matchedExpenses[4].category)
+        matchedExpenses[4].let {
+            assertEquals("AT&T (Phone)", it.description)
+            assertEquals(-34.56, it.amount)
+            assertEquals("Holly's Capital One Checking", it.instrument?.name)
+            assertEquals(Category("Utilities", "Miscellaneous"), it.category)
+        }
 
-        assertEquals(13, result.categorizedExpenses.size)
+        matchedExpenses[5].let {
+            assertEquals("Apple Cloud Storage", it.description)
+            assertEquals(-2.99, it.amount)
+            assertEquals("Alex's AmEx", it.instrument?.name)
+            assertEquals(Category("Utilities", "Miscellaneous"), it.category)
+        }
+
+        assertEquals(14, result.categorizedExpenses.size)
         assertTrue {
             result.categorizedExpenses.any {
                 it.category == Category("Financial_Services", "Fines & Fees")
@@ -226,6 +251,12 @@ class ImportTaskComponentTest {
             }
         }
         // Note that capitalone_expenses.csv does not contain any unmatched transactions, so there is no "Entertainment"/"Miscellaneous" for Holly's Capital One Quicksilver
+        assertTrue {
+            result.categorizedExpenses.any {
+                it.category == Category("Entertainment", "Miscellaneous")
+                    && it.instrument?.name == "Holly's Capital One Checking"
+            }
+        }
         assertTrue {
             result.categorizedExpenses.any {
                 it.category == Category("Utilities", "Miscellaneous")

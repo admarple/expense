@@ -24,6 +24,7 @@ enum class ExpenseReportType {
     AmericanExpress,
     Chase,
     CapitalOne,
+    CapitalOneChecking,
 }
 
 data class ExpectedExpensesInput(

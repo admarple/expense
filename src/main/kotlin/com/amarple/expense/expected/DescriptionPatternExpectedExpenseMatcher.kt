@@ -1,19 +1,21 @@
 package com.amarple.expense.expected
 
+import com.amarple.expense.common.DescriptionPermuter
 import com.amarple.expense.model.internal.ExpectedExpense
 import com.amarple.expense.model.internal.Transaction
 
 class DescriptionPatternExpectedExpenseMatcher(
-    private val patterns: List<DescriptionPatternExpectedExpense>
+    private val patterns: List<DescriptionPatternExpectedExpense>,
+    private val descriptionPermuter: DescriptionPermuter,
 ) : ExpectedExpenseMatcher {
     private val regexes = patterns
         .map { Pair(Regex(it.pattern), it) }
 
     override fun <E : Transaction<E>, T : Transaction<*>> isMatch(expectedExpense: ExpectedExpense<E>, transaction: T): Boolean {
-        return regexes.any {
-            it.second.expenseName == expectedExpense.name
-                && it.first.containsMatchIn(transaction.description)
-                && (!it.second.requirePriceMatch || expectedExpense.expectedTransaction.amount == transaction.amount)
+        return regexes.any { regex ->
+            regex.second.expenseName == expectedExpense.name
+                && descriptionPermuter.permute(transaction.description).any { regex.first.containsMatchIn(it) }
+                && (!regex.second.requirePriceMatch || expectedExpense.expectedTransaction.amount == transaction.amount)
         }
     }
 }

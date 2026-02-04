@@ -13,12 +13,17 @@ class CapitalOneCategoryReaderTest {
         val result = reader.read(CapitalOneCategoryInput(csvPath))
 
         assertEquals(11, result.size)
-        assertEquals("Airfare", result.first().capitalOneCategory)
-        assertEquals("Travel", result.first().category.category)
-        assertEquals("Miscellaneous", result.first().category.subcategory)
 
-        assertEquals("Payment/Credit", result.last().capitalOneCategory)
-        assertEquals("Financial_Services", result.last().category.category)
-        assertEquals("Payments", result.last().category.subcategory)
+        result.first().let {
+            assertEquals("Airfare", it.capitalOneCategory)
+            assertEquals("Travel", it.category.category)
+            assertEquals("Miscellaneous", it.category.subcategory)
+        }
+
+        result.last().let {
+            assertEquals("Payment/Credit", it.capitalOneCategory)
+            assertEquals("Financial_Services", it.category.category)
+            assertEquals("Payments", it.category.subcategory)
+        }
     }
 }

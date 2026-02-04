@@ -10,6 +10,10 @@ import com.amarple.expense.category.DiscretionaryTransactionSorter
 import com.amarple.expense.category.DiscretionaryTransactionsBeautifier
 import com.amarple.expense.cli.ImportCommandLineRunner
 import com.amarple.expense.cli.ImportTask
+import com.amarple.expense.common.CapitalOneCheckingDescriptionPermuter
+import com.amarple.expense.common.CompositeDescriptionPermuter
+import com.amarple.expense.common.DescriptionPermuter
+import com.amarple.expense.common.WellsFargoDescriptionPermuter
 import com.amarple.expense.model.AggregationType
 import com.amarple.expense.model.ExpenseReportType
 import com.amarple.expense.read.config.AmExCategoryReader
@@ -23,6 +27,7 @@ import com.amarple.expense.read.expected.ExpectedExpenseReader
 import com.amarple.expense.read.expected.UberSheetExpectedExpenseReader
 import com.amarple.expense.read.report.AmExExpenseReportReader
 import com.amarple.expense.read.report.BoaExpenseReportReader
+import com.amarple.expense.read.report.CapitalOneCheckingExpenseReportReader
 import com.amarple.expense.read.report.CapitalOneExpenseReportReader
 import com.amarple.expense.read.report.ChaseExpenseReportReader
 import com.amarple.expense.read.report.DiscoverExpenseReportReader
@@ -66,7 +71,16 @@ class ExpenseApplication {
             ExpenseReportType.WellsFargo to WellsFargoExpenseReportReader(),
             ExpenseReportType.AmericanExpress to AmExExpenseReportReader(),
             ExpenseReportType.CapitalOne to CapitalOneExpenseReportReader(),
+            ExpenseReportType.CapitalOneChecking to CapitalOneCheckingExpenseReportReader(),
             ExpenseReportType.Chase to ChaseExpenseReportReader(),
+        )
+    )
+
+    @Bean
+    fun descriptionPermuter(): DescriptionPermuter = CompositeDescriptionPermuter(
+        listOf(
+            WellsFargoDescriptionPermuter(),
+            CapitalOneCheckingDescriptionPermuter(),
         )
     )
 
@@ -97,6 +111,7 @@ class ExpenseApplication {
         patternCategoryReader: DescriptionPatternCategoryReader,
         patternExpectedExpenseReader: DescriptionPatternExpectedExpenseReader,
         expenseReportReaderSelector: ExpenseReportReaderSelector,
+        descriptionPermuter: DescriptionPermuter,
         aggregationSelector: AggregationSelector,
         discretionaryTransactionSorter: DiscretionaryTransactionSorter,
         discretionaryTransactionsBeautifier: DiscretionaryTransactionsBeautifier,
@@ -110,6 +125,7 @@ class ExpenseApplication {
         patternCategoryReader,
         patternExpectedExpenseReader,
         expenseReportReaderSelector,
+        descriptionPermuter,
         aggregationSelector,
         discretionaryTransactionSorter,
         discretionaryTransactionsBeautifier,

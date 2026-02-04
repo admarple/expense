@@ -13,12 +13,17 @@ class DiscoverCategoryReaderTest {
         val result = reader.read(DiscoverCategoryInput(csvPath))
 
         assertEquals(9, result.size)
-        assertEquals("Merchandise", result.first().discoverCategory)
-        assertEquals("Shopping", result.first().category.category)
-        assertEquals("Miscellaneous", result.first().category.subcategory)
 
-        assertEquals("Awards and Rebate Credits", result.last().discoverCategory)
-        assertEquals("Financial_Services", result.last().category.category)
-        assertEquals("Rewards", result.last().category.subcategory)
+        result.first().let {
+            assertEquals("Merchandise", it.discoverCategory)
+            assertEquals("Shopping", it.category.category)
+            assertEquals("Miscellaneous", it.category.subcategory)
+        }
+
+        result.last().let {
+            assertEquals("Awards and Rebate Credits", it.discoverCategory)
+            assertEquals("Financial_Services", it.category.category)
+            assertEquals("Rewards", it.category.subcategory)
+        }
     }
 }

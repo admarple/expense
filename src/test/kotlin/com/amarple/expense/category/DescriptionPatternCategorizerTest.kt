@@ -1,5 +1,7 @@
 package com.amarple.expense.category
 
+import com.amarple.expense.common.NoopDescriptionPermuter
+import com.amarple.expense.common.WellsFargoDescriptionPermuter
 import com.amarple.expense.model.internal.BasicTransaction
 import com.amarple.expense.model.internal.Category
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -23,7 +25,7 @@ class DescriptionPatternCategorizerTest {
         val t2 = BasicTransaction(LocalDate.now(), -20.0, "SAFEWAY STORE 456", null, null)
         val t3 = BasicTransaction(LocalDate.now(), -30.0, "UNKNOWN STORE", null, null)
 
-        val categorizer = DescriptionPatternCategorizer(patterns)
+        val categorizer = DescriptionPatternCategorizer(patterns, NoopDescriptionPermuter)
 
         assertEquals(category1, categorizer.categorize(t1))
         assertEquals(category2, categorizer.categorize(t2))
@@ -42,7 +44,7 @@ class DescriptionPatternCategorizerTest {
 
         val t = BasicTransaction(LocalDate.now(), -10.0, "THIS IS A MATCH", null, null)
 
-        val categorizer = DescriptionPatternCategorizer(patterns)
+        val categorizer = DescriptionPatternCategorizer(patterns, NoopDescriptionPermuter)
 
         assertEquals(category1, categorizer.categorize(t))
     }
@@ -51,6 +53,7 @@ class DescriptionPatternCategorizerTest {
     fun `should match a permutation of a description`() {
         val category1 = Category("Cat1", "Sub1")
         val category2 = Category("Cat2", "Sub2")
+        val descriptionPermuter = WellsFargoDescriptionPermuter()
 
         val patterns = listOf(
             DescriptionPatternCategory("^DUNKIN", category1),
@@ -60,7 +63,7 @@ class DescriptionPatternCategorizerTest {
         val t1 = BasicTransaction(LocalDate.now(), -10.0, "DUNKIN", null, null)
         val t2 = BasicTransaction(LocalDate.now(), -10.0, "PURCHASE AUTHORIZED ON 12/22 DUNKIN", null, null)
 
-        val categorizer = DescriptionPatternCategorizer(patterns)
+        val categorizer = DescriptionPatternCategorizer(patterns, descriptionPermuter)
 
         assertEquals(category1, categorizer.categorize(t1))
         assertEquals(category1, categorizer.categorize(t2))

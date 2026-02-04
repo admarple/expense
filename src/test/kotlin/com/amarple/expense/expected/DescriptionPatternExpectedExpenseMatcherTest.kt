@@ -1,5 +1,7 @@
 package com.amarple.expense.expected
 
+import com.amarple.expense.common.CapitalOneCheckingDescriptionPermuter
+import com.amarple.expense.common.NoopDescriptionPermuter
 import com.amarple.expense.model.internal.BasicTransaction
 import com.amarple.expense.model.internal.ExpectedExpense
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -16,7 +18,7 @@ class DescriptionPatternExpectedExpenseMatcherTest {
             DescriptionPatternExpectedExpense("^NETFLIX", "Subscriptions"),
         )
 
-        val matcher = DescriptionPatternExpectedExpenseMatcher(patterns)
+        val matcher = DescriptionPatternExpectedExpenseMatcher(patterns, NoopDescriptionPermuter)
 
         val tRent = BasicTransaction(LocalDate.now(), -1000.0, "APARTMENT RENT", null, null)
         val tNetflix = BasicTransaction(LocalDate.now(), -15.0, "NETFLIX.COM", null, null)
@@ -38,7 +40,7 @@ class DescriptionPatternExpectedExpenseMatcherTest {
             DescriptionPatternExpectedExpense("^APPLE\\.COM/BILL","Apple Cloud Storage", true),
         )
 
-        val matcher = DescriptionPatternExpectedExpenseMatcher(patterns)
+        val matcher = DescriptionPatternExpectedExpenseMatcher(patterns, NoopDescriptionPermuter)
 
         val tAppleCloud = BasicTransaction(LocalDate.now(), -10.0, "APPLE.COM/BILL", null, null)
         val tAppleOther = BasicTransaction(LocalDate.now(), -50.0, "APPLE.COM/BILL", null, null)
@@ -49,5 +51,23 @@ class DescriptionPatternExpectedExpenseMatcherTest {
         assertTrue(matcher.isMatch(expectedAppleCloud, tAppleCloud))
         assertFalse(matcher.isMatch(expectedAppleCloud, tAppleOther))
         assertFalse(matcher.isMatch(expectedAppleCloud, tOther))
+    }
+
+    @Test
+    fun `should match transaction based on description pattern and permuted expense name`() {
+        val patterns = listOf(
+            DescriptionPatternExpectedExpense("^ATT PAYMENT", "AT&T (Phone)"),
+        )
+        val descriptionPermuter = CapitalOneCheckingDescriptionPermuter()
+
+        val matcher = DescriptionPatternExpectedExpenseMatcher(patterns, descriptionPermuter)
+
+        val tPhone = BasicTransaction(LocalDate.now(), -34.56, "Withdrawal from ATT PAYMENT", null, null)
+        val tOther = BasicTransaction(LocalDate.now(), -50.0, "OTHER", null, null)
+
+        val expectedPhone = ExpectedExpense("AT&T (Phone)", tPhone)
+
+        assertTrue(matcher.isMatch(expectedPhone, tPhone))
+        assertFalse(matcher.isMatch(expectedPhone, tOther))
     }
 }

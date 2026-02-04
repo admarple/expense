@@ -14,17 +14,24 @@ class DescriptionPatternExpectedExpenseReaderTest {
         val csvPath = this::class.java.getResource("/expected_expenses_description_patterns.csv")!!.path
         val result = reader.read(DescriptionPatternExpectedExpensesInput(csvPath))
 
-        assertEquals(5, result.size)
-        assertEquals("^WHITETAIL DISPOSAL INC", result[0].pattern)
-        assertEquals("WhiteTail (Waste)", result[0].expenseName)
-        assertFalse { result[0].requirePriceMatch }
+        assertEquals(6, result.size)
 
-        assertEquals("^GAS TEC", result[1].pattern)
-        assertEquals("GasTec (Propane)", result[1].expenseName)
-        assertFalse { result[1].requirePriceMatch }
+        result[0].let {
+            assertEquals("^WHITETAIL DISPOSAL INC", it.pattern)
+            assertEquals("WhiteTail (Waste)", it.expenseName)
+            assertFalse { it.requirePriceMatch }
+        }
 
-        assertEquals("^APPLE\\.COM/BILL", result[4].pattern)
-        assertEquals("Apple Cloud Storage", result[4].expenseName)
-        assertTrue { result[4].requirePriceMatch }
+        result[1].let {
+            assertEquals("^GAS TEC", it.pattern)
+            assertEquals("GasTec (Propane)", it.expenseName)
+            assertFalse { it.requirePriceMatch }
+        }
+
+        result[5].let {
+            assertEquals("^APPLE\\.COM/BILL", it.pattern)
+            assertEquals("Apple Cloud Storage", it.expenseName)
+            assertTrue { it.requirePriceMatch }
+        }
     }
 }
