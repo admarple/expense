@@ -14,8 +14,8 @@ class CapitalOneCategoryCategorizer(
         return if (transaction is CapitalOneTransaction) {
             categoryMap[transaction.capitalOneCategory]
         } else {
-            // TODO: I *think* preserving the existing category here is best ...
-            // TODO: ... but if we want to indicate that there isn't a matching DiscoveryCategory, then maybe we should return null
+            // We preserve the existing category here ...
+            // ... but if we want to indicate that there isn't a matching CapitalOneCategory, then maybe we should return null
             transaction.category
         }
     }

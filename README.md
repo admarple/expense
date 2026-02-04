@@ -18,7 +18,6 @@ java -jar build/libs/expense-0.0.1-SNAPSHOT.jar -i src/test/resources/import_man
 ```
 
 ## TODO
-* In the output, have a way to obtain positive amounts for debt transactions (since that's what the spreadsheet expects)
 * Consider using BigDecimal instead of Double for amounts
 * Support reports with dates from multiple periods
     * A quick and dirty option is to filter transactions by date

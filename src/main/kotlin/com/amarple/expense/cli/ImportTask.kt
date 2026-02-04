@@ -3,7 +3,7 @@ package com.amarple.expense.cli
 import com.amarple.expense.category.AggregateBy
 import com.amarple.expense.category.AggregationSelector
 import com.amarple.expense.category.AmExCategoryCategorizer
-import com.amarple.expense.category.BespokeCategorizer
+import com.amarple.expense.category.SequentialCategorizer
 import com.amarple.expense.category.CapitalOneCategoryCategorizer
 import com.amarple.expense.category.ChaseCategoryCategorizer
 import com.amarple.expense.category.DescriptionPatternCategorizer
@@ -101,17 +101,16 @@ class ImportTask(
         }
 
         // 5. Try to categorize transactions from the reports
-        val categorizer = BespokeCategorizer(
+        val categorizer = SequentialCategorizer(
             listOf(
+                DescriptionPatternCategorizer(categoryPatterns, descriptionPermuter),
                 DiscoverCategoryCategorizer(discoverCategories),
                 AmExCategoryCategorizer(amExCategories),
                 CapitalOneCategoryCategorizer(capitalOneCategories),
                 ChaseCategoryCategorizer(chaseCategories),
-            ),
-            DescriptionPatternCategorizer(categoryPatterns, descriptionPermuter),
-            StaticCategorizer(Category("Entertainment", "Miscellaneous"))
+                StaticCategorizer(Category("Entertainment", "Miscellaneous"))
+            )
         )
-        // 5.c. TODO: find a way to categorize incoming deposits and outgoing transfers so that we can return them separately
 
         // 6. Calculate new AggregatedTransactions
         val aggregator: AggregateBy = aggregationSelector.getAggregator(importInput.aggregation.aggregationType)
@@ -132,9 +131,9 @@ class ImportTask(
                 && it.category != DEPOSITS // 6.b.3. and incoming deposits,
                 && it.category != TRANSFERS // 6.b.4 and transfers between accounts
         }
-        // TODO: add rewards and deposits as income
-        // TODO: do we want to track or validate payments?
-        // TODO: do we want to track transfers as income (like deposits)?
+        val incomeTransactions = incomeAndTransferTransactions.filter { it.category == REWARDS || it.category == DEPOSITS }
+        val paymentTransactions = incomeAndTransferTransactions.filter { it.category == PAYMENTS }
+        val transferTransactions = incomeAndTransferTransactions.filter { it.category == TRANSFERS }
         // 6.c. ... and group transactions by category and instrument
         val aggregatedDiscretionarySpendTransactions = aggregator.aggregate(discretionarySpendTransactions)
             .let { discretionaryTransactionSorter.sort(it, importInput.aggregation.aggregationType) }
@@ -176,17 +175,20 @@ class ImportTask(
             }
         }
 
-        incomeAndTransferTransactions.forEach { transaction ->
-            warnings.add("Transaction '${transaction}' found but not included.")
+        paymentTransactions.sumOf { it.amount }.let { netPayment ->
+            warnings.add("Net of all payments is: $$netPayment. Ideally, this should be $0.00")
+        }
+        paymentTransactions.forEach { transaction ->
+            warnings.add("Transaction for payment - '${transaction}'.")
         }
 
         return ImportOutput(
             expectedExpenses = expectedResults,
             categorizedExpenses = aggregatedDiscretionarySpendTransactions,
-            outgoingTransfers = emptyList(), // 7.c. TODO: ... a list of transactions for outgoing transfers
-            incomingDeposits = emptyList(), // 7.d. TODO: ... a list of transactions for incoming deposits or rewards
+            outgoingTransfers = transferTransactions,
+            incomingDeposits = incomeTransactions,
             warnings = warnings,
-            month = expenseReports.map { YearMonth.from(it.retrievalDate) }.firstOrNull() // 7.f
+            month = expenseReports.map { YearMonth.from(it.retrievalDate) }.firstOrNull()
         )
     }
 

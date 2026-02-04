@@ -1,9 +1,9 @@
 package com.amarple.expense.read.config
 
 import com.amarple.expense.expected.DescriptionPatternExpectedExpense
+import com.amarple.expense.model.DescriptionPatternExpectedExpenseLine
 import com.amarple.expense.model.DescriptionPatternExpectedExpensesInput
 import com.amarple.expense.read.Jackson.csvMapper
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.dataformat.csv.CsvSchema
 import java.io.File
 
@@ -21,19 +21,4 @@ class DescriptionPatternExpectedExpenseReader {
             .map { it.toDescriptionPattern() }
             .toList()
     }
-}
-
-
-/**
- * TODO: move to the model package (since this is part of the input)?
- */
-data class DescriptionPatternExpectedExpenseLine(
-    @JsonProperty("pattern")
-    val pattern: String,
-    @JsonProperty("transactionName")
-    val transactionName: String,
-    @JsonProperty("requirePriceMatch")
-    val requirePriceMatch: Boolean = false
-) {
-    fun toDescriptionPattern() = DescriptionPatternExpectedExpense(pattern, transactionName, requirePriceMatch)
 }

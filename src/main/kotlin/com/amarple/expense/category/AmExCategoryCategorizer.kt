@@ -19,8 +19,8 @@ class AmExCategoryCategorizer(
             val subcategoryMap = amExCategoryMap[category]
             subcategoryMap?.get(subcategory) ?: subcategoryMap?.get(null)
         } else {
-            // TODO: I *think* preserving the existing category here is best ...
-            // TODO: ... but if we want to indicate that there isn't a matching DiscoveryCategory, then maybe we should return null
+            // We preserve the existing category here ...
+            // ... but if we want to indicate that there isn't a matching AmExCategory, then maybe we should return null
             transaction.category
         }
     }
