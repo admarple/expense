@@ -17,6 +17,7 @@ import java.time.LocalDate
 data class ImportInput(
     val reports: List<ExpenseReportInput>,
     val expectedExpenses: ExpectedExpensesInput,
+    val expectedDeposits: ExpectedDepositsInput? = null,
     val categories: CategoriesInput,
     val aggregation: AggregationInput = AggregationInput(),
 )
@@ -46,6 +47,13 @@ data class ExpectedExpensesInput(
 data class DescriptionPatternExpectedExpensesInput(
     val path: String,
 )
+
+data class ExpectedDepositsInput(
+    val path: String,
+    val descriptionPatterns: DescriptionPatternExpectedExpensesInput,
+) {
+    fun toExpectedExpensesInput() = ExpectedExpensesInput(path, descriptionPatterns)
+}
 
 data class CategoriesInput(
     val hierarchy: CategoryHierarchyInput? = null,

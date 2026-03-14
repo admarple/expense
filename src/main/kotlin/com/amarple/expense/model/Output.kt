@@ -5,6 +5,7 @@ import java.time.YearMonth
 
 data class ImportOutput(
     val expectedExpenses: List<Transaction<*>?>,
+    val expectedDeposits: List<Transaction<*>?>,
     val categorizedExpenses: List<Transaction<*>>,
     val outgoingTransfers: List<Transaction<*>>,
     val incomingDeposits: List<Transaction<*>>,
