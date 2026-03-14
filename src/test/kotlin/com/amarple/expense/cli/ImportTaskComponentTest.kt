@@ -187,12 +187,12 @@ class ImportTaskComponentTest {
             assertEquals(Category("Utilities", "Miscellaneous"), it.category)
         }
 
-        // Expected deposits: Alex's Paycheck matched by MSPBNA ACH TRNSFR
+        // Expected deposits: Withdraw from Funemployment matched by MSPBNA ACH TRNSFR
         assertEquals(1, result.expectedDeposits.size)
         val matchedDeposits = result.expectedDeposits.filterNotNull()
         assertEquals(1, matchedDeposits.size)
         matchedDeposits[0].let {
-            assertEquals("Alex's Paycheck", it.description)
+            assertEquals("Withdraw from Funemployment", it.description)
             assertEquals(600.0, it.amount)
             assertEquals("Joint Wells Fargo", it.instrument?.name)
             assertEquals(Category("Financial_Services", "Deposits"), it.category)
