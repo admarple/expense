@@ -134,6 +134,27 @@ class ImportTask(
         val incomeTransactions = incomeAndTransferTransactions.filter { it.category == REWARDS || it.category == DEPOSITS }
         val paymentTransactions = incomeAndTransferTransactions.filter { it.category == PAYMENTS }
         val transferTransactions = incomeAndTransferTransactions.filter { it.category == TRANSFERS }
+
+        // 6.b.5 Try to match income transactions to expected deposits
+        val expectedDeposits = importInput.expectedDeposits?.let { depositsInput ->
+            expectedExpenseReader.read(depositsInput.toExpectedExpensesInput())
+        } ?: emptyList()
+        val expectedDepositPatterns = importInput.expectedDeposits?.let { depositsInput ->
+            patternExpectedExpenseReader.read(depositsInput.descriptionPatterns)
+        } ?: emptyList()
+        val expectedDepositMatcher = DescriptionPatternExpectedExpenseMatcher(expectedDepositPatterns, descriptionPermuter)
+        val matchedDepositsByExpectedIndex = mutableMapOf<Int, MutableList<Transaction<*>>>()
+        val depositToMatchedExpectedIndexes = mutableMapOf<Transaction<*>, MutableList<Int>>()
+
+        expectedDeposits.forEachIndexed { index, expectedDeposit: ExpectedExpense<*> ->
+            expectedDepositMatcher.match(expectedDeposit, incomeTransactions).forEach { transaction: Transaction<*> ->
+                matchedDepositsByExpectedIndex.getOrPut(index) { mutableListOf() }.add(transaction)
+                depositToMatchedExpectedIndexes.getOrPut(transaction) { mutableListOf() }.add(index)
+            }
+        }
+
+        val unmatchedIncomeTransactions = incomeTransactions.filter { !depositToMatchedExpectedIndexes.containsKey(it) }
+
         // 6.c. ... and group transactions by category and instrument
         val aggregatedDiscretionarySpendTransactions = aggregator.aggregate(discretionarySpendTransactions)
             .let { discretionaryTransactionSorter.sort(it, importInput.aggregation.aggregationType) }
@@ -151,6 +172,13 @@ class ImportTask(
             matchedTransactionsByExpenseIndex[index]
                 ?.let { AggregatedTransaction(transactions = it, description = expense.name) }
                 ?.updateCategory(category = expense.expectedTransaction.category)
+        }
+
+        // 7.b. ... a list of transactions for expected deposits, in the same order as config, with null where no deposit was matched
+        val expectedDepositResults = expectedDeposits.mapIndexed { index, deposit ->
+            matchedDepositsByExpectedIndex[index]
+                ?.let { AggregatedTransaction(transactions = it, description = deposit.name) }
+                ?.updateCategory(category = deposit.expectedTransaction.category)
         }
 
         // 7.e. ... warnings for ...
@@ -174,6 +202,19 @@ class ImportTask(
                 warnings.add("Expected expense '${expense.name}' did not match any transactions")
             }
         }
+        // 7.e.5 ... any deposits that matched multiple expected deposits
+        depositToMatchedExpectedIndexes.forEach { (transaction, indexes) ->
+            if (indexes.size > 1) {
+                val depositNames = indexes.joinToString { expectedDeposits[it].name }
+                warnings.add("Deposit '${transaction.description}' matched multiple expected deposits: $depositNames")
+            }
+        }
+        // 7.e.6 ... any expected deposits that did not match any transactions
+        expectedDeposits.forEachIndexed { index, deposit ->
+            if (!matchedDepositsByExpectedIndex.containsKey(index)) {
+                warnings.add("Expected deposit '${deposit.name}' did not match any transactions")
+            }
+        }
 
         paymentTransactions.sumOf { it.amount }.let { netPayment ->
             warnings.add("Net of all payments is: $$netPayment. Ideally, this should be $0.00")
@@ -184,9 +225,10 @@ class ImportTask(
 
         return ImportOutput(
             expectedExpenses = expectedResults,
+            expectedDeposits = expectedDepositResults,
             categorizedExpenses = aggregatedDiscretionarySpendTransactions,
             outgoingTransfers = transferTransactions,
-            incomingDeposits = incomeTransactions,
+            incomingDeposits = unmatchedIncomeTransactions,
             warnings = warnings,
             month = expenseReports.map { YearMonth.from(it.retrievalDate) }.firstOrNull()
         )

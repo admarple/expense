@@ -43,6 +43,12 @@
       "path": "src/test/resources/expected_expenses_description_patterns.csv"
     }
   },
+  "expectedDeposits": {
+    "path": "src/test/resources/expected_deposits.csv",
+    "descriptionPatterns": {
+      "path": "src/test/resources/expected_deposits_description_patterns.csv"
+    }
+  },
   "categories": {
     "descriptionPatterns": {
       "path": "src/test/resources/category_description_patterns.csv"

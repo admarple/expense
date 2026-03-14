@@ -5,3 +5,5 @@
 "^HEALTH INS PREMIUM PMT","Health","Physical Healthcare"
 "^CAPITAL ONE .* PYMT","Financial_Services","Payments"
 "^CLASSPASS\*","Health","Habits, e.g. Gym"
+"^MSPBNA ACH","Financial_Services","Deposits"
+"^Deposit from WELLS FARGO IFI","Financial_Services","Transfers"
