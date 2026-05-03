@@ -49,7 +49,7 @@ class ImportTaskComponentTest {
     fun setUp() {
         discoverExpensesCsvPath = this::class.java.getResource("/discover_expenses.csv")!!.path
         boaExpensesCsvPath = this::class.java.getResource("/boa_expenses.csv")!!.path
-        wellsFargoExpensesCsvPath = this::class.java.getResource("/wellsfargo_expenses.csv")!!.path
+        wellsFargoExpensesCsvPath = this::class.java.getResource("/wellsfargo_v1_expenses.csv")!!.path
         amExExpensesCsvPath = this::class.java.getResource("/amex_expenses.csv")!!.path
         capitalOneExpensesCsvPath = this::class.java.getResource("/capitalone_expenses.csv")!!.path
         capitalOneCheckingExpensesCsvPath = this::class.java.getResource("/capitalone_checking_expenses.csv")!!.path
