@@ -12,6 +12,7 @@ object Jackson {
             it.registerKotlinModule()
             it.registerModule(JavaTimeModule())
             it.enable(CsvParser.Feature.EMPTY_STRING_AS_NULL)
+            it.enable(CsvParser.Feature.SKIP_EMPTY_LINES)
         }
     }
 
