@@ -62,10 +62,12 @@ class DescriptionPatternCategorizerTest {
 
         val t1 = BasicTransaction(LocalDate.now(), -10.0, "DUNKIN", null, null)
         val t2 = BasicTransaction(LocalDate.now(), -10.0, "PURCHASE AUTHORIZED ON 12/22 DUNKIN", null, null)
+        val t3 = BasicTransaction(LocalDate.now(), -10.0, "PURCHASE    AUTHORIZED ON    12/22 DUNKIN", null, null)
 
         val categorizer = DescriptionPatternCategorizer(patterns, descriptionPermuter)
 
         assertEquals(category1, categorizer.categorize(t1))
         assertEquals(category1, categorizer.categorize(t2))
+        assertEquals(category1, categorizer.categorize(t3))
     }
 }

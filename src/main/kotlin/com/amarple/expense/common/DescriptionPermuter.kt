@@ -31,7 +31,7 @@ class WellsFargoDescriptionPermuter(
     }
 
     companion object {
-        private val PURCHASE_REGEX = Regex("^(PURCHASE AUTHORIZED ON [^ ]* )")
+        private val PURCHASE_REGEX = Regex("^(PURCHASE\\s+AUTHORIZED\\s+ON\\s+[^ ]*\\s+)")
     }
 }
 
